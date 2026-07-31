@@ -1,4 +1,4 @@
-# finix test driver library
+# dinix test driver library
 #
 # provides mkTest function for creating VM-based tests.
 # uses NixOS test driver with finit-specific extensions.
@@ -7,7 +7,7 @@
   lib,
 }:
 let
-  finixModules = import ../../modules;
+  dinixModules = import ../../modules;
 
   # build the nixos test driver with FinitMachine class
   testDriver = import ./driver.nix { inherit pkgs; };
@@ -20,7 +20,7 @@ let
     else
       throw "unknown QEMU serial device for ${pkgs.stdenv.hostPlatform.system}";
 
-  # evaluate a finix VM configuration
+  # evaluate a dinix VM configuration
   mkVm =
     nodes: name: nodeConfig:
     lib.evalModules {
@@ -53,7 +53,7 @@ let
           virtualisation.qemu.package = pkgs.qemu_test;
         }
       ]
-      ++ lib.attrValues finixModules;
+      ++ lib.attrValues dinixModules;
     };
 
   # create a vm start script compatible with nixos test driver
@@ -86,7 +86,7 @@ let
   # create the vm derivation with start script
   mkVmDerivation =
     name: config:
-    pkgs.runCommand "finix-vm-${name}"
+    pkgs.runCommand "dinix-vm-${name}"
       {
         preferLocalBuild = true;
         meta.mainProgram = "run-${name}-vm";
@@ -139,11 +139,11 @@ in
         test_script = pythonTestScript;
       };
 
-      driverConfigurationFile = pkgs.writers.writeJSON "finix-driver-configuration-${name}.json" driverConfiguration;
+      driverConfigurationFile = pkgs.writers.writeJSON "dinix-driver-configuration-${name}.json" driverConfiguration;
 
       # build the test driver wrapper
       driver =
-        pkgs.runCommand "finix-test-driver-${name}"
+        pkgs.runCommand "dinix-test-driver-${name}"
           {
             nativeBuildInputs = [ pkgs.makeWrapper ];
             buildInputs = [ testDriver ];
@@ -151,11 +151,11 @@ in
               inherit vms evaluatedNodes;
               nodes = evaluatedNodes;
             };
-            meta.mainProgram = "finix-test-driver";
+            meta.mainProgram = "dinix-test-driver";
           }
           ''
             mkdir -p $out/bin
-            makeWrapper ${testDriver}/bin/nixos-test-driver $out/bin/finix-test-driver \
+            makeWrapper ${testDriver}/bin/nixos-test-driver $out/bin/dinix-test-driver \
               --add-flags "--config ${driverConfigurationFile}" \
               ${lib.escapeShellArgs (
                 lib.concatMap (arg: [
@@ -167,7 +167,7 @@ in
 
       # run the test - vde switches are managed by the test driver's vlan.py
       test =
-        pkgs.runCommand "finix-test-${name}"
+        pkgs.runCommand "dinix-test-${name}"
           {
             requiredSystemFeatures = [ "kvm" ];
             nativeBuildInputs = [ pkgs.vde2 ];
@@ -179,7 +179,7 @@ in
           ''
             mkdir -p $out
             export LOGFILE=/dev/null
-            ${driver}/bin/finix-test-driver -o $out
+            ${driver}/bin/dinix-test-driver -o $out
           '';
     in
     test;

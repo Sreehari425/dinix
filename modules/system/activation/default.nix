@@ -155,7 +155,7 @@ in
 
     system.topLevel = checkAssertWarn (
       pkgs.stdenvNoCC.mkDerivation {
-        name = "finix-system";
+        name = "dinix-system";
         preferLocalBuild = true;
         allowSubstitutes = false;
         buildCommand =
@@ -165,7 +165,7 @@ in
           ''
             mkdir -p $out $out/bin
 
-            echo -n "finix" > $out/nixos-version
+            echo -n "dinix" > $out/nixos-version
 
             cp ${config.system.activation.out} $out/activate
 
@@ -192,12 +192,16 @@ in
             ${coreutils}/bin/ln -s ${config.boot.initrd.package}/initrd $out/initrd
           ''
           + ''
-            cp ${../../finit/switch-to-configuration.sh} $out/bin/switch-to-configuration
+            cp ${
+              if config.dinit.enable then ../../dinit/switch-to-configuration.sh
+              else ../../finit/switch-to-configuration.sh
+            } $out/bin/switch-to-configuration
             substituteInPlace $out/bin/switch-to-configuration \
               --subst-var out \
               --subst-var-by bash ${pkgs.bash} \
-              --subst-var-by distroId finix \
+              --subst-var-by distroId dinix \
               --subst-var-by finit ${config.finit.package} \
+              --subst-var-by dinit ${config.dinit.package} \
               --subst-var-by logger ${pkgs.util-linuxMinimal} \
               --subst-var-by coreutils ${config.programs.coreutils.package} \
               --subst-var-by installHook ${config.providers.bootloader.installHook} \

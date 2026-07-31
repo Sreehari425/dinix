@@ -24,7 +24,7 @@ let
   );
 in
 stdenv.mkDerivation {
-  pname = "finix-setup";
+  pname = "dinix-setup";
   version = "0.1.0";
 
   src = ./.;
@@ -48,7 +48,7 @@ stdenv.mkDerivation {
       -W -Wall -Wextra -Wno-unused-parameter -std=gnu99 \
       -D__FINIT__ \
       -I${finit.dev}/include \
-      -o finix-setup.so \
+      -o dinix-setup.so \
       finix-setup.c
 
     runHook postBuild
@@ -58,13 +58,13 @@ stdenv.mkDerivation {
     runHook preInstall
 
     mkdir -p $out/lib/finit/plugins
-    install -m 755 finix-setup.so $out/lib/finit/plugins/
+    install -m 755 dinix-setup.so $out/lib/finit/plugins/
 
     runHook postInstall
   '';
 
   meta = {
-    description = "finit plugin for finix early boot initialization";
+    description = "finit plugin for dinix early boot initialization";
     license = lib.licenses.mit;
     platforms = lib.platforms.linux;
   };

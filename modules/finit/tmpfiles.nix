@@ -15,7 +15,7 @@
   };
 
   config = {
-    environment.etc."tmpfiles.d/finix.conf".text = ''
+    environment.etc."tmpfiles.d/dinix.conf".text = ''
       # This file is created automatically and should not be modified.
       # Please change the option ‘finit.tmpfiles.rules’ instead.
 
@@ -25,7 +25,7 @@
     environment.etc."finit.d/tmpfiles-setup.conf".text = lib.mkAfter ''
 
       # force a restart on configuration change
-      # ${config.environment.etc."tmpfiles.d/finix.conf".source}
+      # ${config.environment.etc."tmpfiles.d/dinix.conf".source}
     '';
 
     finit.tasks.tmpfiles-setup.command = "${config.finit.package}/libexec/finit/tmpfiles --create";

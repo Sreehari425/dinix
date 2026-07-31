@@ -1,2 +1,2 @@
 - copied from `nixpkgs` with minimal to no modification
-- future work - decide how to better integrate into `finix`
+- future work - decide how to better integrate into `dinix`

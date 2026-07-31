@@ -37,16 +37,16 @@ if [[ ! -f /etc/NIXOS && ! "$(grep -E "^ID=\"?$distroId\"?" /etc/os-release 2>/d
   exit 1
 fi
 
-# mkdir -p -m 755 /run/finix
+# mkdir -p -m 755 /run/dinix
 # 
 # # Acquire lock
-# exec {lockfd}>/run/finix/switch-to-configuration.lock
+# exec {lockfd}>/run/dinix/switch-to-configuration.lock
 # if ! flock -n "$lockfd"; then
 #   echo "Could not acquire lock" >&2
 #   exit 1
 # fi
 
-"$logger/bin/logger" -t finix "starting switch-to-configuration ($action)"
+"$logger/bin/logger" -t dinix "starting switch-to-configuration ($action)"
 
 if [[ "$action" != boot && "${NIXOS_NO_CHECK-}" != 1 ]]; then
   if ! "$inhibitCheck" "$out"; then
@@ -70,7 +70,7 @@ if [[ "$action" == boot ]]; then
   exit 0
 fi
 
-"$logger/bin/logger" -t finix "switching to system configuration $out"
+"$logger/bin/logger" -t dinix "switching to system configuration $out"
 echo "activating the configuration..." >&2
 
 res=0
@@ -84,9 +84,9 @@ if ! "$finit/bin/initctl" reload; then
 fi
 
 if (( res == 0 )); then
-  "$logger/bin/logger" -t finix "finished switching to system configuration $out"
+  "$logger/bin/logger" -t dinix "finished switching to system configuration $out"
 else
-  "$logger/bin/logger" -t finix -p user.err "switching to system configuration $out failed (status $res)"
+  "$logger/bin/logger" -t dinix -p user.err "switching to system configuration $out failed (status $res)"
 fi
 
 exit "$res"

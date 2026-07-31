@@ -26,6 +26,7 @@ let
       pkgs.bash
       config.finit.package
     ]
+    ++ lib.optional cfg.dinit.enable cfg.dinit.package
     ++ lib.optionals config.services.mdevd.enable [
       config.services.mdevd.package
       pkgs.execline
@@ -61,7 +62,7 @@ in
         Can also be set to a hashed super user password to allow
         authenticated access to the rescue mode.
 
-        When access is denied, finix prints the failure reason on console
+        When access is denied, dinix prints the failure reason on console
         and reboots after 10s instead of opening a shell.
       '';
     };
@@ -142,7 +143,7 @@ in
     contents = [
       {
         target = "/init";
-        source = "${config.finit.package}/bin/finit";
+        source = if config.dinit.enable then "${config.dinit.package}/bin/dinit" else "${config.finit.package}/bin/finit";
       }
       {
         target = "/bin";
@@ -155,19 +156,19 @@ in
       {
         target = "/etc/os-release";
         source = pkgs.writeText "os-release" ''
-          PRETTY_NAME="finix - stage 1"
+          PRETTY_NAME="dinix - stage 1"
         '';
       }
       {
-        target = "/etc/modules-load.d/finix.conf";
-        source = pkgs.writeText "finix.conf" ''
+        target = "/etc/modules-load.d/dinix.conf";
+        source = pkgs.writeText "dinix.conf" ''
 
           ${lib.concatStringsSep "\n" config.boot.initrd.kernelModules}
         '';
       }
       {
-        target = "/etc/tmpfiles.d/finix.conf";
-        source = pkgs.writeText "finix.conf" ''
+        target = "/etc/tmpfiles.d/dinix.conf";
+        source = pkgs.writeText "dinix.conf" ''
           d /sysroot
           d /tmp
         '';

@@ -8,8 +8,8 @@ let
   cfg = config.finit;
   format = pkgs.formats.keyValue { };
 
-  # finix-setup plugin for early boot initialization
-  finix-setup = pkgs.callPackage ../../pkgs/finix-setup {
+  # dinix-setup plugin for early boot initialization
+  dinix-setup = pkgs.callPackage ../../pkgs/finix-setup {
     extraPackages = lib.unique (
       lib.flatten (
         lib.concatMap (v: lib.optional v.enable (v.packages or [ ])) (
@@ -740,7 +740,7 @@ in
           plymouth = config.programs.plymouth.package;
         }).overrideAttrs
           (o: {
-            configureFlags = o.configureFlags ++ [ "--with-plugin-path=${finix-setup}/lib/finit/plugins" ];
+            configureFlags = o.configureFlags ++ [ "--with-plugin-path=${dinix-setup}/lib/finit/plugins" ];
           });
       description = ''
         The package to use for `finit`.
@@ -748,7 +748,7 @@ in
         ::: {.note}
         The specified package will have its `configureFlags` appended to with
         a finit plugin path (`--with-plugin-path`) set to the required
-        `finix-setup` plugin.
+        `dinix-setup` plugin.
         :::
       '';
     };
@@ -899,7 +899,7 @@ in
   config = {
     environment.etc =
       let
-        # NOTE: entries under /etc/finit.d are marked as direct-symlink to avoid service reloads on every finix activation
+        # NOTE: entries under /etc/finit.d are marked as direct-symlink to avoid service reloads on every dinix activation
 
         serviceTree = lib.mapAttrs' (name: service: {
           name = if service.id != "%i" then "finit.d/${name}.conf" else "finit.d/available/${name}.conf";

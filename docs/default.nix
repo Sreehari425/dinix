@@ -38,19 +38,19 @@ let
           |> toString
           |> lib.removePrefix (toString ../modules)
           |> (x: {
-            url = "https://github.com/finix-community/finix/blob/main/modules${x}";
-            name = "<finix/modules${x}>";
+            url = "https://github.com/finix-community/dinix/blob/main/modules${x}";
+            name = "<dinix/modules${x}>";
           })
         ) opt.declarations;
       };
   };
 in
-pkgs.runCommandLocal "finix-options-doc" { nativeBuildInputs = [ pkgs.ndg ]; } ''
+pkgs.runCommandLocal "dinix-options-doc" { nativeBuildInputs = [ pkgs.ndg ]; } ''
   mkdir -p $out
 
   ndg html \
     --jobs $NIX_BUILD_CORES \
-    --title finix \
+    --title dinix \
     --module-options ${doc.optionsJSON}/share/doc/nixos/options.json \
     --manpage-urls ${./manpage-urls.json} \
     --input-dir ${./.} \

@@ -91,7 +91,7 @@ in
         }
       ];
       description = ''
-        `finix` will automatically generate SSH host keys using {manpage}`dropbearkey(1)` on startup.
+        `dinix` will automatically generate SSH host keys using {manpage}`dropbearkey(1)` on startup.
 
         ::: {.note}
         Automatic generation of host keys can be disabled by setting a value of `lib.mkForce [ ]`.

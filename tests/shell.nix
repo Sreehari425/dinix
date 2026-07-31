@@ -13,8 +13,8 @@
 
   testScript = ''
     machine.start()
-    machine.wait_for_console_text("finix - stage 1")
-    machine.wait_for_console_text("finix - stage 2")
+    machine.wait_for_console_text("dinix - stage 1")
+    machine.wait_for_console_text("dinix - stage 2")
     machine.wait_for_console_text("entering runlevel S")
     machine.wait_for_console_text("entering runlevel 2")
 

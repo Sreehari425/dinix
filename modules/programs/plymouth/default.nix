@@ -51,7 +51,7 @@ in
         options.Daemon = {
           Theme = lib.mkOption {
             type = lib.types.str;
-            default = "finix-theme";
+            default = "dinix-theme";
             description = ''
               The name of the `plymouth` theme to use. Must match the directory name
               of the theme within the theme package specified by {option}`programs.plymouth.theme`.
@@ -78,7 +78,7 @@ in
     theme = lib.mkOption {
       type = lib.types.package;
       default = pkgs.callPackage ./finix-plymouth.nix { }; # TODO: upstream in nixpkgs?
-      defaultText = lib.literalExpression "pkgs.plymouth-finix-theme";
+      defaultText = lib.literalExpression "pkgs.plymouth-dinix-theme";
       description = ''
         The package containing a `plymouth` theme.
       '';
@@ -103,7 +103,7 @@ in
       {
         # notify plymouth and the finit plymouth plugin that this is an initramfs - enables plymouth process survival across switch-root
         target = "/etc/initrd-release";
-        source = pkgs.writeText "initrd-release" "FINIX_INITRD=1\n"; # TODO: generate a proper initrd-release, depends on generating a proper /etc/os-release
+        source = pkgs.writeText "initrd-release" "DINIX_INITRD=1\n"; # TODO: generate a proper initrd-release, depends on generating a proper /etc/os-release
       }
       {
         target = "/etc/plymouth/plymouthd.conf";

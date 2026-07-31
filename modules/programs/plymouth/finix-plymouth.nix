@@ -5,7 +5,7 @@
 }:
 
 stdenv.mkDerivation {
-  pname = "finix-plymouth";
+  pname = "dinix-plymouth";
   version = "0.1.0";
 
   src = fetchFromGitHub {
@@ -22,7 +22,7 @@ stdenv.mkDerivation {
   '';
 
   meta = {
-    description = "Finix Plymouth boot theme";
+    description = "Dinix Plymouth boot theme";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ aanderse ];
     platforms = lib.platforms.linux;

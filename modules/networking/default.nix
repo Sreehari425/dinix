@@ -25,7 +25,7 @@ in
   options.networking = {
     hostName = lib.mkOption {
       type = lib.types.str;
-      default = "finix";
+      default = "dinix";
       description = ''
         The hostname of this system.
       '';

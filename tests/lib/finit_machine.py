@@ -1,5 +1,5 @@
 """
-Finit-specific Machine class for the finix test driver.
+Finit-specific Machine class for the dinix test driver.
 
 This extends the NixOS test driver's Machine class with finit-specific
 methods, replacing systemd-specific functionality.

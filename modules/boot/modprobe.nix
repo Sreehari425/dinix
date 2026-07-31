@@ -19,7 +19,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    environment.etc."modules-load.d/finix.conf" = {
+    environment.etc."modules-load.d/dinix.conf" = {
       text = ''
         set modprobe = ${pkgs.kmod}/bin/modprobe
 

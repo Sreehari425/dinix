@@ -1,12 +1,12 @@
 {
-  description = "A collection of overlays, modules, libs, and templates for working with finix";
+  description = "A collection of overlays, modules, libs, and templates for working with dinix";
 
   outputs =
     { self }:
     {
       nixosModules = import ./modules;
 
-      lib.finixSystem =
+      lib.dinixSystem =
         {
           lib ? null,
           specialArgs ? { },
@@ -25,6 +25,10 @@
           inherit (config._module.args) pkgs;
           inherit lib;
         };
+
+      # Compatibility alias for configurations written against the original
+      # Finix project API. New configurations should use lib.dinixSystem.
+      lib.finixSystem = self.lib.dinixSystem;
 
       formatter =
         let

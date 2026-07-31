@@ -45,7 +45,7 @@ let
     }
   );
 
-  # TODO: present in nixpkgs utils module, maybe port to finix?
+  # TODO: present in nixpkgs utils module, maybe port to dinix?
   removePackagesByName =
     packages: packagesToRemove:
     let

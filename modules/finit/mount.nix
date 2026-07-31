@@ -93,7 +93,7 @@ in
               sleep 0.1
             done
 
-            printf 'finix-wait-dev: %s did not appear after 90s\n' "${fs.device}" >&2
+            printf 'dinix-wait-dev: %s did not appear after 90s\n' "${fs.device}" >&2
             exit 1
           '';
         }

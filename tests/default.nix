@@ -1,4 +1,4 @@
-# finix test suite
+# dinix test suite
 #
 # auto-discovers and exposes all tests in this directory and subdirectories.
 # similar to nixos/tests/all-tests.nix in nixpkgs.
@@ -10,7 +10,7 @@
 #
 # interactive mode:
 #   nix-build tests -A boot.driverInteractive
-#   ./result/bin/finix-test-driver
+#   ./result/bin/dinix-test-driver
 {
   pkgs ?
     let

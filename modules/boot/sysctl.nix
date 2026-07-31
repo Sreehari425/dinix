@@ -64,7 +64,7 @@ in
   };
 
   config = {
-    environment.etc."sysctl.d/60-finix.conf".text = lib.concatStrings (
+    environment.etc."sysctl.d/60-dinix.conf".text = lib.concatStrings (
       lib.mapAttrsToList (
         n: v: lib.optionalString (v != null) "${n}=${if v == false then "0" else toString v}\n"
       ) config.boot.kernel.sysctl
@@ -74,7 +74,7 @@ in
     finit.tasks.sysctl = {
       description = "apply kernel variables";
       runlevels = "12345";
-      command = "${pkgs.procps}/bin/sysctl -p ${config.environment.etc."sysctl.d/60-finix.conf".source}";
+      command = "${pkgs.procps}/bin/sysctl -p ${config.environment.etc."sysctl.d/60-dinix.conf".source}";
     };
 
     # Hide kernel pointers (e.g. in /proc/modules) for unprivileged

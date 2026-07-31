@@ -1,5 +1,5 @@
 /*
- * finix-setup - finit plugin for finix early boot initialization
+ * dinix-setup - finit plugin for dinix early boot initialization
  *
  * this plugin handles:
  * - setting initial PATH (baked in at build time)
@@ -34,7 +34,7 @@ static char *system_config = NULL;
 /*
  * determine the system configuration path (toplevel) from argv[0].
  *
- * when the kernel boots with init=/nix/store/xxx-finix-system/init,
+ * when the kernel boots with init=/nix/store/xxx-dinix-system/init,
  * argv[0] preserves that path (even though init is a symlink to finit).
  * the systemConfig is the parent directory of argv[0].
  */
@@ -50,7 +50,7 @@ static char *get_system_config(void)
 
     fd = open("/proc/self/cmdline", O_RDONLY);
     if (fd < 0) {
-        logit(LOG_ERR, "finix-setup: failed to open /proc/self/cmdline");
+        logit(LOG_ERR, "dinix-setup: failed to open /proc/self/cmdline");
         return NULL;
     }
 
@@ -58,7 +58,7 @@ static char *get_system_config(void)
     close(fd);
 
     if (n <= 0) {
-        logit(LOG_ERR, "finix-setup: failed to read /proc/self/cmdline");
+        logit(LOG_ERR, "dinix-setup: failed to read /proc/self/cmdline");
         return NULL;
     }
     cmdline[n] = '\0';
@@ -70,7 +70,7 @@ static char *get_system_config(void)
      */
     copy = strdup(cmdline);
     if (!copy) {
-        logit(LOG_ERR, "finix-setup: strdup failed");
+        logit(LOG_ERR, "dinix-setup: strdup failed");
         return NULL;
     }
 
@@ -78,9 +78,9 @@ static char *get_system_config(void)
     free(copy);
 
     if (system_config)
-        logit(LOG_INFO, "finix-setup: systemConfig = %s", system_config);
+        logit(LOG_INFO, "dinix-setup: systemConfig = %s", system_config);
     else
-        logit(LOG_ERR, "finix-setup: failed to determine systemConfig");
+        logit(LOG_ERR, "dinix-setup: failed to determine systemConfig");
 
     return system_config;
 }
@@ -98,33 +98,33 @@ static void create_run_symlinks(void *arg)
 
     sys = get_system_config();
     if (!sys) {
-        logit(LOG_ERR, "finix-setup: cannot create symlinks without systemConfig");
+        logit(LOG_ERR, "dinix-setup: cannot create symlinks without systemConfig");
         return;
     }
 
     /* create symlinks in /run (now that it's mounted) */
-    logit(LOG_INFO, "finix-setup: creating /run/booted-system symlink");
+        logit(LOG_INFO, "dinix-setup: creating /run/booted-system symlink");
     if (symlink(sys, "/run/booted-system") < 0 && errno != EEXIST)
-        logit(LOG_ERR, "finix-setup: failed to create /run/booted-system: %s", strerror(errno));
+        logit(LOG_ERR, "dinix-setup: failed to create /run/booted-system: %s", strerror(errno));
 
-    logit(LOG_INFO, "finix-setup: creating /run/current-system symlink");
+        logit(LOG_INFO, "dinix-setup: creating /run/current-system symlink");
     if (symlink(sys, "/run/current-system") < 0 && errno != EEXIST)
-        logit(LOG_ERR, "finix-setup: failed to create /run/current-system: %s", strerror(errno));
+        logit(LOG_ERR, "dinix-setup: failed to create /run/current-system: %s", strerror(errno));
 }
 
 static plugin_t plugin = {
-    .name = "finix-setup",
+    .name = "dinix-setup",
     .hook[HOOK_BASEFS_UP] = { .cb = create_run_symlinks },
 };
 
-PLUGIN_INIT(finix_setup_init)
+PLUGIN_INIT(dinix_setup_init)
 {
     char *sys;
     char activate_path[PATH_MAX];
 
-    logit(LOG_NOTICE, "\n[1;32m<<< finix - stage 2 >>>[0m\n");
+    logit(LOG_NOTICE, "\n[1;32m<<< dinix - stage 2 >>>[0m\n");
 
-    logit(LOG_INFO, "finix-setup: setting PATH");
+        logit(LOG_INFO, "dinix-setup: setting PATH");
     setenv("PATH", INITIAL_PATH, 1);
 
     /*
@@ -135,7 +135,7 @@ PLUGIN_INIT(finix_setup_init)
      */
     sys = get_system_config();
     if (!sys) {
-        logit(LOG_ERR, "finix-setup: cannot activate without systemConfig");
+        logit(LOG_ERR, "dinix-setup: cannot activate without systemConfig");
         plugin_register(&plugin);
         return;
     }
@@ -146,7 +146,7 @@ PLUGIN_INIT(finix_setup_init)
     plugin_register(&plugin);
 }
 
-PLUGIN_EXIT(finix_setup_exit)
+PLUGIN_EXIT(dinix_setup_exit)
 {
     plugin_unregister(&plugin);
     free(system_config);

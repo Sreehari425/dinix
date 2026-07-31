@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 let
-  finix-logo = pkgs.runCommand "finix-logo" { } ''
-    install -Dm644 ${../../assets/finix-logo.svg} $out/share/icons/hicolor/scalable/apps/finix-logo.svg
+  dinix-logo = pkgs.runCommand "dinix-logo" { } ''
+    install -Dm644 ${../../assets/finix-logo.svg} $out/share/icons/hicolor/scalable/apps/dinix-logo.svg
   '';
 in
 {
@@ -23,7 +23,7 @@ in
   };
 
   config = {
-    environment.systemPackages = [ finix-logo ];
+    environment.systemPackages = [ dinix-logo ];
     environment.etc."nsswitch.conf".text = ''
       # /etc/nsswitch.conf
       #
@@ -49,15 +49,15 @@ in
 
     environment.etc.os-release.text = ''
       ANSI_COLOR="0;38;2;231;56;71"
-      BUG_REPORT_URL="https://github.com/finix-community/finix/issues/"
-      DEFAULT_HOSTNAME=finix
-      HOME_URL="https://github.com/finix-community/finix/"
-      ID=finix
-      LOGO=finix-logo
-      NAME=finix
-      PRETTY_NAME="finix"
-      VENDOR_NAME=finix
-      VENDOR_URL="https://github.com/finix-community/finix/"
+      BUG_REPORT_URL="https://github.com/finix-community/dinix/issues/"
+      DEFAULT_HOSTNAME=dinix
+      HOME_URL="https://github.com/finix-community/dinix/"
+      ID=dinix
+      LOGO=dinix-logo
+      NAME=dinix
+      PRETTY_NAME="dinix"
+      VENDOR_NAME=dinix
+      VENDOR_URL="https://github.com/finix-community/dinix/"
       VERSION="rolling"
       VERSION_ID="rolling"
     '';

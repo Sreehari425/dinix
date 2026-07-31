@@ -1,6 +1,6 @@
 # Ideas & Proposals
 
-This file tracks ideas and proposals for the finix codebase. When you have an idea for a feature, improvement, or change, submit a PR adding an entry using the template below.
+This file tracks ideas and proposals for the dinix codebase. When you have an idea for a feature, improvement, or change, submit a PR adding an entry using the template below.
 
 **Note:** PRs to this file should only come from contributors of any repository under the `finix-community` GitHub organization. PRs from non-contributors may be declined.
 
@@ -25,7 +25,7 @@ Copy the template below and fill in each section:
 - **Status:** `proposed`
 - **Author:** @willowispll
 - **Date:** 2026-06-22
-- **Description:** Make finix do not evaluate any modules by default.
+- **Description:** Make dinix do not evaluate any modules by default.
 - **Motivation:** This will make the system even more lightweight and unopinionated; furthermore, users should primarily use profiles anyway.
 - **Proposed Approach:** Edit modules/default.nix?
 - **Related:** Multiple conversations in discord

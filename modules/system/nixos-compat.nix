@@ -1,4 +1,4 @@
-# provides compatibility options so a finix system can be built with `nixos-rebuild`
+# provides compatibility options so a dinix system can be built with `nixos-rebuild`
 {
   config,
   pkgs,
