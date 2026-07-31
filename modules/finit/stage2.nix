@@ -9,7 +9,7 @@ let
   format = pkgs.formats.keyValue { };
 
   # dinix-setup plugin for early boot initialization
-  dinix-setup = pkgs.callPackage ../../pkgs/finix-setup {
+  dinix-setup = pkgs.callPackage ../../pkgs/dinix-setup {
     extraPackages = lib.unique (
       lib.flatten (
         lib.concatMap (v: lib.optional v.enable (v.packages or [ ])) (

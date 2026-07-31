@@ -39,7 +39,7 @@ stdenv.mkDerivation {
     runHook preBuild
 
     # substitute the initial PATH for finit to use
-    substituteInPlace finix-setup.c \
+    substituteInPlace dinix-setup.c \
       --replace-fail '@initialPath@' "${PATH}"
 
     # compile the plugin as a shared library
@@ -49,7 +49,7 @@ stdenv.mkDerivation {
       -D__FINIT__ \
       -I${finit.dev}/include \
       -o dinix-setup.so \
-      finix-setup.c
+      dinix-setup.c
 
     runHook postBuild
   '';

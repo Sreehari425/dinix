@@ -1,7 +1,7 @@
 { pkgs, lib, ... }:
 let
   dinix-logo = pkgs.runCommand "dinix-logo" { } ''
-    install -Dm644 ${../../assets/finix-logo.svg} $out/share/icons/hicolor/scalable/apps/dinix-logo.svg
+    install -Dm644 ${../../assets/dinix-logo.svg} $out/share/icons/hicolor/scalable/apps/dinix-logo.svg
   '';
 in
 {

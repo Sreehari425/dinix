@@ -77,7 +77,7 @@ in
 
     theme = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.callPackage ./finix-plymouth.nix { }; # TODO: upstream in nixpkgs?
+      default = pkgs.callPackage ./dinix-plymouth.nix { }; # TODO: upstream in nixpkgs?
       defaultText = lib.literalExpression "pkgs.plymouth-dinix-theme";
       description = ''
         The package containing a `plymouth` theme.
