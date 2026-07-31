@@ -7,6 +7,12 @@
 let
   cfg = config.services.nix-daemon;
 
+  daemonCommand = pkgs.writeShellScript "dinix-nix-daemon" ''
+    set -eu
+    ${pkgs.coreutils}/bin/mkdir -p /nix/var/nix/daemon-socket
+    exec ${cfg.package}/bin/nix-daemon --daemon
+  '';
+
   configType =
     let
       confAtom =
@@ -68,7 +74,7 @@ in
   options.services.nix-daemon = {
     enable = lib.mkOption {
       type = lib.types.bool;
-      default = false;
+      default = true;
       description = ''
         Whether to enable [nix](${pkgs.nix.meta.homepage}) as a system service.
 
@@ -282,8 +288,9 @@ in
     finit.services.nix-daemon = {
       description = "nix daemon";
       conditions = "service/syslogd/ready";
-      command = "${cfg.package}/bin/nix-daemon --daemon";
+      command = daemonCommand;
       nohup = true;
+      respawn = true;
 
       environment.CURL_CA_BUNDLE = config.security.pki.caBundle;
 

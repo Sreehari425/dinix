@@ -49,15 +49,15 @@ in
 
     environment.etc.os-release.text = ''
       ANSI_COLOR="0;38;2;231;56;71"
-      BUG_REPORT_URL="https://github.com/finix-community/dinix/issues/"
+      BUG_REPORT_URL="https://github.com/Sreehari425/dinix/issues/"
       DEFAULT_HOSTNAME=dinix
-      HOME_URL="https://github.com/finix-community/dinix/"
+      HOME_URL="https://github.com/Sreehari425/dinix/"
       ID=dinix
       LOGO=dinix-logo
       NAME=dinix
       PRETTY_NAME="dinix"
       VENDOR_NAME=dinix
-      VENDOR_URL="https://github.com/finix-community/dinix/"
+      VENDOR_URL="https://github.com/Sreehari425/dinix/"
       VERSION="rolling"
       VERSION_ID="rolling"
     '';
