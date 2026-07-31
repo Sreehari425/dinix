@@ -35,7 +35,7 @@
       # see https://github.com/NixOS/nixpkgs/blob/80bdc1e5ce51f56b19791b52b2901187931f5353/pkgs/by-name/ni/nixos-enter/nixos-enter.sh#L108 for details
       (lib.lowPrio (
         pkgs.writeShellScriptBin "systemd-tmpfiles" ''
-          exec "${config.finit.package}/libexec/finit/tmpfiles" "$@"
+          exec "${if config.dinit.enable then "${pkgs.systemd}/bin/systemd-tmpfiles" else "${config.finit.package}/libexec/finit/tmpfiles"}" "$@"
         ''
       ))
     ];

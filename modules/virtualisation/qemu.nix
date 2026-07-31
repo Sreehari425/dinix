@@ -232,7 +232,10 @@ in
       "virtio_console"
       "virtio_net"
     ]
-    ++ lib.optional (cfg.sharedDirectories != { }) "9pnet_virtio";
+    ++ lib.optionals (cfg.sharedDirectories != { } || cfg.mountHostNixStore) [
+      "9p"
+      "9pnet_virtio"
+    ];
 
     fileSystems = lib.mkMerge (
       [

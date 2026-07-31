@@ -24,9 +24,9 @@ let
       pkgs.kmod
       (lib.hiPrio pkgs.util-linux.mount)
       pkgs.bash
-      config.finit.package
     ]
-    ++ lib.optional cfg.dinit.enable cfg.dinit.package
+    ++ lib.optional (!config.dinit.enable) config.finit.package
+    ++ lib.optional config.dinit.enable config.dinit.package
     ++ lib.optionals config.services.mdevd.enable [
       config.services.mdevd.package
       pkgs.execline
@@ -69,6 +69,10 @@ in
   };
 
   config.boot.initrd = {
+    finit.tasks.modprobe = lib.mkIf config.dinit.enable {
+      command = "/bin/modprobe --all ${lib.concatStringsSep " " cfg.kernelModules}";
+    };
+
     finit.run.setup-stdio = {
       priority = 100;
       script = ''
@@ -143,7 +147,65 @@ in
     contents = [
       {
         target = "/init";
-        source = if config.dinit.enable then "${config.dinit.package}/bin/dinit" else "${config.finit.package}/bin/finit";
+        source =
+          if config.dinit.enable then
+            pkgs.writeTextFile {
+              name = "dinix-initrd-init";
+              executable = true;
+              text = lib.concatStringsSep "\n" [
+                "#!/bin/sh"
+                "set -u"
+                ""
+                "/bin/mount -t devtmpfs devtmpfs /dev 2>/dev/null || true"
+                "/bin/busybox mkdir -p /dev"
+                "/bin/busybox mkdir -p /proc /sys /run"
+                "/bin/mount -t proc proc /proc 2>/dev/null || true"
+                "/bin/mount -t sysfs sysfs /sys 2>/dev/null || true"
+                "/bin/mount -t tmpfs -o mode=0755 tmpfs /run 2>/dev/null || true"
+                "[ -e /dev/null ] || /bin/mknod -m 666 /dev/null c 1 3"
+                "[ -e /dev/console ] || /bin/mknod -m 600 /dev/console c 5 1"
+                "/bin/busybox ln -sfn /proc/self/fd /dev/fd"
+                "/bin/busybox ln -sfn /proc/self/fd/0 /dev/stdin"
+                "/bin/busybox ln -sfn /proc/self/fd/1 /dev/stdout"
+                "/bin/busybox ln -sfn /proc/self/fd/2 /dev/stderr"
+                ""
+                (if config.dinit.enable then
+                  ''
+                    /bin/dinit &
+                    dinitPid=$!
+                    while [ ! -e /run/dinit-boot-complete ]; do
+                      if ! /bin/busybox kill -0 "$dinitPid" 2>/dev/null; then
+                        wait "$dinitPid"
+                        exit 1
+                      fi
+                      /bin/busybox sleep 0.1
+                    done
+
+                    /bin/busybox kill -TERM "$dinitPid"
+                    wait "$dinitPid" || true
+
+                    stage2Init=/init
+                    for option in $(/bin/busybox cat /proc/cmdline); do
+                      case "$option" in
+                        init=*) stage2Init=''${option#init=} ;;
+                      esac
+                    done
+
+                    /bin/busybox mkdir -p /sysroot/dev /sysroot/etc/dinit.d /sysroot/etc/finit.d /sysroot/proc /sysroot/run /sysroot/sys /sysroot/tmp /sysroot/var
+                    /bin/busybox mount --bind /dev /sysroot/dev
+                    /bin/busybox mount --bind /proc /sysroot/proc
+                    /bin/busybox mount --bind /sys /sysroot/sys
+                    /bin/busybox chroot /sysroot ${config.system.activation.out}
+                    stage2Root=''${stage2Init%/init}
+                    /bin/busybox ln -sfn "$stage2Root" /sysroot/run/current-system
+                    exec /bin/busybox switch_root /sysroot "$stage2Init"
+                  ''
+                else
+                  "exec /bin/dinit")
+              ];
+            }
+          else
+            "${config.finit.package}/bin/finit";
       }
       {
         target = "/bin";
@@ -214,6 +276,8 @@ in
             root:${password}:1:0:99999:7:::
           '';
       }
+    ]
+    ++ lib.optionals (!config.dinit.enable) [
       { source = "${config.finit.package}/libexec"; }
       { source = "${config.finit.package}/lib/finit/"; }
       { source = "${config.finit.package}/lib/finit/plugins/bootmisc.so"; }

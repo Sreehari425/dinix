@@ -19,7 +19,7 @@ in
   config = {
     assertions = [
       {
-        assertion = lib.versionAtLeast cfg.package.version "4.16";
+        assertion = config.dinit.enable || lib.versionAtLeast cfg.package.version "4.16";
         message = "finit version must be at least 4.16";
       }
     ];

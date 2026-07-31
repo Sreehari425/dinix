@@ -731,17 +731,20 @@ in
   options.finit = {
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.finit;
-      defaultText = lib.literalExpression "pkgs.finit";
+      default = if config.dinit.enable then config.dinit.package else pkgs.finit;
+      defaultText = lib.literalExpression ''if config.dinit.enable then config.dinit.package else pkgs.finit'';
       apply =
         package:
-        (package.override {
-          plymouthSupport = config.programs.plymouth.enable;
-          plymouth = config.programs.plymouth.package;
-        }).overrideAttrs
-          (o: {
-            configureFlags = o.configureFlags ++ [ "--with-plugin-path=${dinix-setup}/lib/finit/plugins" ];
-          });
+        if config.dinit.enable then
+          package
+        else
+          (package.override {
+            plymouthSupport = config.programs.plymouth.enable;
+            plymouth = config.programs.plymouth.package;
+          }).overrideAttrs
+            (o: {
+              configureFlags = o.configureFlags ++ [ "--with-plugin-path=${dinix-setup}/lib/finit/plugins" ];
+            });
       description = ''
         The package to use for `finit`.
 

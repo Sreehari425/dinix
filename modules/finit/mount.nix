@@ -54,7 +54,12 @@ let
 
   readinessConditions =
     fs:
-    if isZfs fs then
+    if config.dinit.enable then
+      [ "task/modprobe/success" ]
+      ++ lib.optional (isZfs fs) "task/zpool-import-${utils.escapePath (poolOf fs)}/success"
+      ++ lib.optional (needsWaitDev fs) "task/wait-dev-${utils.escapePath fs.mountPoint}/success"
+      ++ parentConditions fs
+    else if isZfs fs then
       [ "task/zpool-import-${utils.escapePath (poolOf fs)}/success" ]
     else if needsWaitDev fs then
       [ "task/wait-dev-${utils.escapePath fs.mountPoint}/success" ]

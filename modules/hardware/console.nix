@@ -24,6 +24,10 @@ let
     conditions = "dev/console";
     command = "${pkgs.busybox}/bin/loadkmap < ${cfg.binaryKeyMap}";
   };
+
+  initrdLoadkmapTask = loadkmapTask // {
+    command = if config.dinit.enable then "/bin/busybox loadkmap < /bkeymap" else loadkmapTask.command;
+  };
 in
 {
   options = {
@@ -74,7 +78,7 @@ in
 
     finit.tasks.loadkmap = loadkmapTask;
 
-    boot.initrd.finit.tasks.loadkmap = loadkmapTask;
+    boot.initrd.finit.tasks.loadkmap = initrdLoadkmapTask;
 
     finit.tasks.setvesablank =
       let

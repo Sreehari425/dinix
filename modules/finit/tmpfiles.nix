@@ -1,8 +1,16 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
+let
+  tmpfiles =
+    if config.dinit.enable then
+      "${pkgs.systemd}/bin/systemd-tmpfiles"
+    else
+      "${config.finit.package}/libexec/finit/tmpfiles";
+in
 {
   options.finit.tmpfiles.rules = lib.mkOption {
     type = with lib.types; listOf str;
@@ -28,12 +36,12 @@
       # ${config.environment.etc."tmpfiles.d/dinix.conf".source}
     '';
 
-    finit.tasks.tmpfiles-setup.command = "${config.finit.package}/libexec/finit/tmpfiles --create";
+    finit.tasks.tmpfiles-setup.command = "${tmpfiles} --create";
 
     providers.scheduler.tasks = {
       tmpfiles-clean = {
         interval = "daily";
-        command = "${config.finit.package}/libexec/finit/tmpfiles --clean";
+        command = "${tmpfiles} --clean";
       };
     };
 
