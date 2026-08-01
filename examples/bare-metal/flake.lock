@@ -1,0 +1,43 @@
+{
+  "nodes": {
+    "dinix": {
+      "locked": {
+        "lastModified": 1785581155,
+        "narHash": "sha256-zTSfl1ow/Oq1txGtJQUwCZAp+gtZxdrh11flwdge+uY=",
+        "owner": "Sreehari425",
+        "repo": "dinix",
+        "rev": "53d38c11a20ee380b02e2a913790509d9add5815",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Sreehari425",
+        "repo": "dinix",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1785454630,
+        "narHash": "sha256-LQy14TZp77TwbQf40gg1V3jo8FwJG0jGDkAH+zRHqg8=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "1559d3daa3ecc813a650b79375ea61b6741b8746",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "dinix": "dinix",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
