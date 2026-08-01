@@ -114,7 +114,7 @@ in
       UpdateCheck = "none";
     };
 
-    finit.services.nzbget =
+    dinit.services.nzbget =
       let
         configOpts = lib.concatStringsSep " " (
           lib.mapAttrsToList (name: value: "-o ${name}=${lib.escapeShellArg (toStr value)}") cfg.settings
@@ -150,7 +150,7 @@ in
         '';
       };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d ${logDir} 0750 ${cfg.user} ${cfg.group}"
     ]
     ++ lib.optionals (cfg.stateDir == "/var/lib/nzbget") [

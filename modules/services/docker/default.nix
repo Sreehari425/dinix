@@ -244,7 +244,7 @@ in
       docker = { };
     };
 
-    finit.services.docker = {
+    dinit.services.docker = {
       description = "docker daemon";
       conditions = [
         "hook/net/up"

@@ -194,7 +194,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/cron 0710"
       "d /var/spool 0755 - - -"
       "d /var/spool/cron 0755 - - -"
@@ -210,15 +210,15 @@ in
       source = "${cfg.package}/bin/crontab";
     };
 
-    finit.services.cron = {
+    dinit.services.cron = {
       description = "cron daemon";
       conditions = "service/syslogd/ready";
       command = "${lib.getExe cfg.package} -n " + lib.escapeShellArgs cfg.extraArgs;
       notify = "pid";
     };
 
-    # TODO: add finit.services.restartTriggers option
-    environment.etc."finit.d/cron.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.restartTriggers option
+    environment.etc."dinit.d/cron.conf".text = lib.mkAfter ''
 
       # standard nixos trick to force a restart when something has changed
       # ${config.environment.etc.crontab.source}

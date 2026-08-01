@@ -141,8 +141,8 @@ in
         ) cfg.keyboards;
 
         serviceFile = {
-          # TODO: add finit.services.reloadTriggers option
-          "finit.d/keyd.conf".text = lib.mkAfter ''
+          # TODO: add dinit.services.reloadTriggers option
+          "dinit.d/keyd.conf".text = lib.mkAfter ''
 
             # force a reload on configuration change
             ${lib.concatMapAttrsStringSep "\n" (k: v: "# " + v.source) configTree}
@@ -154,7 +154,7 @@ in
         serviceFile
       ];
 
-    finit.services.keyd = {
+    dinit.services.keyd = {
       description = "keyd, a key remapping daemon";
       command = "${cfg.package}/bin/keyd";
       conditions = "service/syslogd/ready";

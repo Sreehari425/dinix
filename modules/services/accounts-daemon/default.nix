@@ -41,7 +41,7 @@ in
     services.dbus.enable = true;
     services.dbus.packages = [ cfg.package ];
 
-    finit.services.accounts-daemon = {
+    dinit.services.accounts-daemon = {
       description = "accounts service";
       conditions = "service/dbus/ready";
       command = "${cfg.package}/libexec/accounts-daemon" + lib.optionalString cfg.debug " --debug";
@@ -62,7 +62,7 @@ in
           };
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/AccountsService 0775"
     ];
   };

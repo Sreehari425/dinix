@@ -51,7 +51,7 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    finit.tasks.nftables = {
+    dinit.tasks.nftables = {
       conditions = "service/syslogd/ready";
       command = "${lib.getExe cfg.package} -f ${cfg.configFile}";
       post = pkgs.writeShellScript "nftables.sh" ''

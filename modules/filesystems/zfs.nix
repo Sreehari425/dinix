@@ -99,7 +99,7 @@
         boot.initrd = {
           kernelModules = [ "zfs" ];
 
-          finit.tasks = lib.genAttrs' config.boot.zfs.importPools (
+          dinit.tasks = lib.genAttrs' config.boot.zfs.importPools (
             pool:
             lib.nameValuePair "zpool-import-${utils.escapePath pool}" {
               conditions =

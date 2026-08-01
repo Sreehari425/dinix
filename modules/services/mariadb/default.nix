@@ -114,7 +114,7 @@ in
       mariadb = { };
     };
 
-    finit.tasks.mariadb-init = {
+    dinit.tasks.mariadb-init = {
       inherit (cfg) user group;
 
       description = "mariadb database init";
@@ -136,7 +136,7 @@ in
       };
     };
 
-    finit.services.mariadb = {
+    dinit.services.mariadb = {
       inherit (cfg) user group;
 
       description = "mariadb database service";
@@ -155,8 +155,8 @@ in
 
     environment.etc."my.cnf".source = configFile;
 
-    # FIXME: finit doesn't implement Z recursively...
-    finit.tmpfiles.rules = [
+    # FIXME: dinit doesn't implement Z recursively...
+    dinit.tmpfiles.rules = [
       "d ${cfg.dataDir} 0700 ${cfg.user} ${cfg.group}"
       "Z ${cfg.dataDir} 0700 ${cfg.user} ${cfg.group}"
       "d /run/mysqld 0755 ${cfg.user} ${cfg.group}"

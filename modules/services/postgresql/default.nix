@@ -135,8 +135,8 @@ in
     environment.etc."postgresql/${cfg.package.psqlSchema}/postgresql.conf".source =
       format.generate "postgresql.conf" cfg.settings;
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/postgresql.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/postgresql.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."postgresql/${cfg.package.psqlSchema}/postgresql.conf".source}
@@ -144,7 +144,7 @@ in
       # ${config.environment.etc."postgresql/${cfg.package.psqlSchema}/pg_ident.conf".source}
     '';
 
-    finit.services.postgresql = {
+    dinit.services.postgresql = {
       inherit (cfg) user group;
 
       command = "${lib.getExe' cfg.package "postgres"} " + lib.escapeShellArgs cfg.extraArgs;
@@ -163,7 +163,7 @@ in
       '';
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /run/postgresql - ${cfg.user} ${cfg.group}"
     ]
     ++ lib.optionals (cfg.dataDir == "/var/lib/postgresql/${cfg.package.psqlSchema}") [

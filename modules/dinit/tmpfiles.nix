@@ -5,14 +5,10 @@
   ...
 }:
 let
-  tmpfiles =
-    if config.dinit.enable then
-      "${pkgs.systemd}/bin/systemd-tmpfiles"
-    else
-      "${config.finit.package}/libexec/finit/tmpfiles";
+  tmpfiles = "${pkgs.systemd}/bin/systemd-tmpfiles";
 in
 {
-  options.finit.tmpfiles.rules = lib.mkOption {
+  options.dinit.tmpfiles.rules = lib.mkOption {
     type = with lib.types; listOf str;
     default = [ ];
     example = [ "d /tmp 1777 root root 10d" ];
@@ -25,18 +21,12 @@ in
   config = {
     environment.etc."tmpfiles.d/dinix.conf".text = ''
       # This file is created automatically and should not be modified.
-      # Please change the option ‘finit.tmpfiles.rules’ instead.
+      # Please change the option ‘dinit.tmpfiles.rules’ instead.
 
-      ${lib.concatStringsSep "\n" config.finit.tmpfiles.rules}
+      ${lib.concatStringsSep "\n" config.dinit.tmpfiles.rules}
     '';
 
-    environment.etc."finit.d/tmpfiles-setup.conf".text = lib.mkAfter ''
-
-      # force a restart on configuration change
-      # ${config.environment.etc."tmpfiles.d/dinix.conf".source}
-    '';
-
-    finit.tasks.tmpfiles-setup.command = "${tmpfiles} --create";
+    dinit.tasks.tmpfiles-setup.command = "${tmpfiles} --create";
 
     providers.scheduler.tasks = {
       tmpfiles-clean = {
@@ -45,7 +35,7 @@ in
       };
     };
 
-    # needed for finit tmpfiles Z implementation: pkgs.policycoreutils
+    # needed for dinit tmpfiles Z implementation: pkgs.policycoreutils
     # TODO: make this an optional dependency, fixup Z behaviour in general
   };
 }

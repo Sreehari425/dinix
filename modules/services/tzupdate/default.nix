@@ -38,7 +38,7 @@ in
   config = lib.mkIf cfg.enable {
     time.timeZone = null;
 
-    finit.tasks.tzupdate = {
+    dinit.tasks.tzupdate = {
       description = "timezone update service";
       command = "${cfg.package}/bin/tzupdate -z ${pkgs.tzdata}/share/zoneinfo -d /dev/null";
       conditions = [

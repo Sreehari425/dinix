@@ -42,7 +42,7 @@ in
       pumount = mkSetuidWrapper cfg.package "pumount";
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /media - root root - -"
     ];
   };

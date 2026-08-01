@@ -230,8 +230,8 @@ in
       cfg.package
     ];
 
-    # adapted from https://github.com/troglobit/finit/blob/master/system/10-hotplug.conf.in
-    finit.services.udevd = {
+    # adapted from https://github.com/troglobit/dinit/blob/master/system/10-hotplug.conf.in
+    dinit.services.udevd = {
       description = "device event daemon (${cfg.package.pname})";
       runlevels = "S12345789";
       command = "${cfg.package}/bin/udevd --ready-notify=%n" + lib.optionalString cfg.debug " -D";
@@ -244,7 +244,7 @@ in
 
     # Wait for udevd to start, then trigger coldplug events and module loading.
     # The last 'settle' call waits for it to finalize processing all uevents.
-    finit.run =
+    dinit.run =
       let
         defaults = {
           runlevels = "S";
@@ -308,12 +308,12 @@ in
 
     # build out the default initramfs image
     boot.initrd = {
-      finit.services.udevd = {
+      dinit.services.udevd = {
         command = "/bin/udevd --ready-notify=%n";
         notify = "s6";
       };
 
-      finit.run = {
+      dinit.run = {
         "udevadm@1" = {
           command = "udevadm settle -t 0";
           conditions = "service/udevd/ready";

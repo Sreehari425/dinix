@@ -194,7 +194,7 @@ in
       )
       ++ lib.optional (encryptedSwapDevices != [ ]) pkgs.cryptsetup;
 
-    finit.tasks = lib.listToAttrs (lib.map makeEncryptedSwapTask encryptedSwapDevices);
+    dinit.tasks = lib.listToAttrs (lib.map makeEncryptedSwapTask encryptedSwapDevices);
 
     environment.etc.fstab.text = ''
       # This is a generated file.  Do not edit!
@@ -213,7 +213,7 @@ in
         ]
       ) fileSystems) { }}
 
-      # swap devices (random-encrypted swap is handled by finit.tasks instead)
+      # swap devices (random-encrypted swap is handled by dinit.tasks instead)
       ${lib.concatMapStrings makeSwapEntry plainSwapDevices}
     '';
 

@@ -64,11 +64,11 @@ in
 
     services.dbus.packages = [ cfg.package ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/iwd 0700"
     ];
 
-    finit.services.iwd = {
+    dinit.services.iwd = {
       description = "wireless service";
       conditions = "service/syslogd/ready";
       command = "${cfg.package}/libexec/iwd" + lib.optionalString cfg.debug " -d";
@@ -80,8 +80,8 @@ in
       ];
     };
 
-    # TODO: add finit.services.restartTriggers option
-    environment.etc."finit.d/iwd.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.restartTriggers option
+    environment.etc."dinit.d/iwd.conf".text = lib.mkAfter ''
 
       # standard nixos trick to force a restart when something has changed
       # ${config.environment.etc."iwd/main.conf".source}

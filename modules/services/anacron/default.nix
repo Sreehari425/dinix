@@ -129,7 +129,7 @@ in
       '';
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/spool/anacron 0755"
     ];
 

@@ -40,7 +40,6 @@ in
       ./dinit
       ./environment
       ./filesystems
-      ./finit
       ./fonts
       ./hardware
       ./i18n

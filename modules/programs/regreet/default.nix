@@ -129,7 +129,7 @@ in
       };
     };
 
-    finit.services.greetd.conditions = [
+    dinit.services.greetd.conditions = [
       "service/accounts-daemon/ready"
     ];
 
@@ -176,7 +176,7 @@ in
       }
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/log/regreet 0755 greeter greeter - -"
       "d /var/lib/regreet 0755 greeter greeter - -"
     ];

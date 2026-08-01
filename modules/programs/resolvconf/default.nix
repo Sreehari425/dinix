@@ -52,7 +52,7 @@ in
           LIBEXECDIR=$out/libexec/resolvconf
           VARDIR=/run/resolvconf
           MANDIR=$out/share/man
-          RESTARTCMD="initctl restart \\\\\$\$1"
+          RESTARTCMD="dinitctl restart \\\\\$\$1"
           EOF
         '';
       });
@@ -85,12 +85,12 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    finit.tasks.resolvconf = {
+    dinit.tasks.resolvconf = {
       command = "${lib.getExe cfg.package} -u";
       remain = true;
     };
 
-    environment.etc."finit.d/resolvconf.conf".text = lib.mkAfter ''
+    environment.etc."dinit.d/resolvconf.conf".text = lib.mkAfter ''
 
       # force a restart on configuration change
       # ${config.environment.etc."resolvconf.conf".source}

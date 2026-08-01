@@ -68,7 +68,7 @@ in
       });
     '';
 
-    finit.services.fprintd = {
+    dinit.services.fprintd = {
       description = "fingerprint authentication daemon";
       command = "${cfg.package}/libexec/fprintd --no-timeout";
       conditions = "service/polkit/ready";

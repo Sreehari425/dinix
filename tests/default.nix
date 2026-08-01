@@ -6,7 +6,7 @@
 # usage:
 #   nix-build tests                   # build all tests
 #   nix-build tests -A boot           # build specific test
-#   nix-build tests -A finit.tmpfiles # build test from subdirectory
+#   nix-build tests -A dinit.tmpfiles # build test from subdirectory
 #
 # interactive mode:
 #   nix-build tests -A boot.driverInteractive
@@ -55,7 +55,7 @@ let
   ) dirContents;
 
   # for each subdirectory, create a nested attrset of tests
-  # e.g., finit/tmpfiles.nix -> finit.tmpfiles
+  # e.g., dinit/tmpfiles.nix -> dinit.tmpfiles
   # use recurseIntoAttrs so nix-build recurses into subdirectories
   subDirTests = lib.mapAttrs (
     dirName: _:

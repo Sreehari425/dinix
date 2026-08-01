@@ -69,7 +69,7 @@
         "aes_generic"
       ];
 
-      boot.initrd.finit.tasks.luks =
+      boot.initrd.dinit.tasks.luks =
         let
           devices = lib.filterAttrs (_: fs: fs.fsType == "luks") config.fileSystems;
         in

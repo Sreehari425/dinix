@@ -44,7 +44,7 @@ in
       seat = { };
     };
 
-    finit.services.seatd = {
+    dinit.services.seatd = {
       description = "seat management daemon";
       runlevels = "34";
       conditions = "service/syslogd/ready";

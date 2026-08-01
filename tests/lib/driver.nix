@@ -1,4 +1,4 @@
-# dinix test driver - extends nixos test driver with FinitMachine support
+# dinix test driver - extends nixos test driver with DinitMachine support
 { pkgs }:
 
 let
@@ -10,6 +10,6 @@ nixosTestDriver.overrideAttrs (old: {
   pname = "dinix-test-driver";
 
   postPatch = (old.postPatch or "") + ''
-    cp ${./finit_machine.py} test_driver/finit_machine.py
+    cp ${./dinit_machine.py} test_driver/dinit_machine.py
   '';
 })

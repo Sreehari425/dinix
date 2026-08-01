@@ -86,7 +86,7 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    finit.services.nvidia-persistenced = {
+    dinit.services.nvidia-persistenced = {
       inherit (cfg) user group;
 
       description = "NVIDIA persistence daemon";
@@ -97,7 +97,7 @@ in
       restart = -1;
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d ${runtimeDir} 0750 ${cfg.user} ${cfg.group}"
     ];
 

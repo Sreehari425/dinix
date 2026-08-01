@@ -103,7 +103,7 @@ in
       }
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "L+ /run/opengl-driver - - - - ${driversEnv}"
     ]
     ++ lib.optionals cfg.enable32Bit [

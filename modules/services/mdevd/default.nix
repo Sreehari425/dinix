@@ -179,7 +179,7 @@ in
 
     environment.etc."mdev.conf".text = config.services.mdevd.hotplugRules;
 
-    finit.services.mdevd = {
+    dinit.services.mdevd = {
       description = "device event daemon (mdevd)";
       command =
         "${cfg.package}/bin/mdevd -D %n -F /run/current-system/firmware -f ${
@@ -200,7 +200,7 @@ in
       ];
     };
 
-    finit.run.coldplug = {
+    dinit.run.coldplug = {
       description = "cold plugging system";
       command = "${cfg.package}/bin/mdevd-coldplug" + lib.optionalString cfg.debug " -v 3";
       runlevels = "S";
@@ -228,12 +228,12 @@ in
 
     # build out the default initramfs image
     boot.initrd = {
-      finit.services.mdevd = {
+      dinit.services.mdevd = {
         command = "mdevd -D %n -O 2";
         notify = "s6";
       };
 
-      finit.run.coldplug = {
+      dinit.run.coldplug = {
         command = "mdevd-coldplug -O 2";
         conditions = "service/mdevd/ready";
         priority = 300;

@@ -119,7 +119,7 @@ in
       cfg.package
     ];
 
-    finit.tasks.dropbear-keygen = {
+    dinit.tasks.dropbear-keygen = {
       description = "generate ssh host keys";
       log = true;
       command =
@@ -135,7 +135,7 @@ in
         pkgs.writeShellScript "ssh-keygen.sh" script;
     };
 
-    finit.services.dropbear = {
+    dinit.services.dropbear = {
       description = "dropbear ssh daemon";
       conditions = [
         "net/lo/up"
@@ -155,7 +155,7 @@ in
       ];
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d ${stateDir} 0755"
     ];
   };

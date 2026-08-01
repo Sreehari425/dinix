@@ -52,7 +52,7 @@
     (lib.mkIf config.boot.initrd.supportedFilesystems.lvm.enable {
       boot.initrd.kernelModules = [ "dm_mod" ];
 
-      boot.initrd.finit.tasks.lvm = {
+      boot.initrd.dinit.tasks.lvm = {
         conditions = map (fs: "task/wait-dev-${utils.escapePath fs.device}/success") (
           lib.filter (fs: fs.fsType == "lvm") (lib.attrValues config.fileSystems)
         );

@@ -1,7 +1,7 @@
 # dinix test driver library
 #
 # provides mkTest function for creating VM-based tests.
-# uses NixOS test driver with finit-specific extensions.
+# uses NixOS test driver with dinit-specific extensions.
 {
   pkgs,
   lib,
@@ -9,7 +9,7 @@
 let
   dinixModules = import ../../modules;
 
-  # build the nixos test driver with FinitMachine class
+  # build the nixos test driver with DinitMachine class
   testDriver = import ./driver.nix { inherit pkgs; };
 
   qemuSerialDevice =

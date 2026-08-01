@@ -68,9 +68,9 @@ in
     };
 
     # autologin is hardcoded to run on tty1
-    finit.ttys.tty1.enable = lib.mkForce false;
+    dinit.ttys.tty1.enable = lib.mkForce false;
 
-    finit.services.autologin = {
+    dinit.services.autologin = {
       command = "${lib.getExe pkgs.autologin} ${cfg.user} ${cfg.command}";
       conditions = [
         "service/syslogd/ready"

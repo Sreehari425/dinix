@@ -26,8 +26,8 @@
     server.wait_for_console_text("entering runlevel 2")
 
     # wait for network connection
-    client.wait_until_succeeds(f"initctl cond get net/eth0/running")
-    server.wait_until_succeeds(f"initctl cond get net/eth0/running")
+    client.wait_until_succeeds("ip link show eth0 | grep -q 'state UP'", timeout=30)
+    server.wait_until_succeeds("ip link show eth0 | grep -q 'state UP'", timeout=30)
 
     with subtest("nodes have correct ips"):
         client_ip = client.succeed("ip addr show eth0")

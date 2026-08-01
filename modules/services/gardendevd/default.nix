@@ -148,7 +148,7 @@ in
           done
         '';
 
-    finit.services.gardendevd = {
+    dinit.services.gardendevd = {
       inherit (cfg) path;
 
       description = "device event daemon (gardendevd)";
@@ -159,7 +159,7 @@ in
       log = true;
     };
 
-    finit.run =
+    dinit.run =
       let
         defaults = {
           runlevels = "S";
@@ -198,12 +198,12 @@ in
 
     # build out the default initramfs image
     boot.initrd = {
-      finit.services.gardendevd = {
+      dinit.services.gardendevd = {
         command = "gardendevd -K -D %n";
         notify = "s6";
       };
 
-      finit.run = {
+      dinit.run = {
         "gardendevctl@1" = {
           command = "gardendevctl trigger -c add -t all";
           conditions = "service/gardendevd/ready";

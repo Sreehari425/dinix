@@ -48,7 +48,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    finit.services.syslogd = {
+    dinit.services.syslogd = {
       description = "system logging daemon";
       runlevels = "S0123456789";
       conditions =

@@ -34,7 +34,7 @@ in
       pkgs.ddccontrol
     ];
 
-    finit.services.ddccontrol = {
+    dinit.services.ddccontrol = {
       description = "control monitor parameters, like brightness, contrast, and other...";
       command = "${pkgs.ddccontrol}/libexec/ddccontrol/ddccontrol_service";
       conditions = "service/dbus/ready";

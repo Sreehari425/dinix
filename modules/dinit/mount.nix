@@ -81,7 +81,7 @@ let
 in
 {
   config = {
-    boot.initrd.finit.tasks = lib.mkMerge [
+    boot.initrd.dinit.tasks = lib.mkMerge [
       (lib.genAttrs' waitDevs (
         fs:
         lib.nameValuePair "wait-dev-${waitDevName fs}" {
@@ -130,7 +130,7 @@ in
     assertions = [
       {
         assertion = lib.length names == lib.length (lib.unique names);
-        message = "boot.initrd: neededForBoot filesystems collide after escaping to finit stanza names";
+        message = "boot.initrd: neededForBoot filesystems collide after escaping to dinit stanza names";
       }
     ];
   };

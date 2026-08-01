@@ -36,38 +36,13 @@ in
     };
   };
 
-  # finit has explicit sysklogd support, requires `logger` to be available in `PATH`
-  options.finit = lib.optionalAttrs cfg.enable {
-    services = lib.mkOption {
-      type = lib.types.attrsOf (
-        lib.types.submodule (
-          { config, ... }:
-          {
-            config.path = lib.optionals (config.log != false) [ cfg.package ];
-          }
-        )
-      );
-    };
-
-    tasks = lib.mkOption {
-      type = lib.types.attrsOf (
-        lib.types.submodule (
-          { config, ... }:
-          {
-            config.path = lib.optionals (config.log != false) [ cfg.package ];
-          }
-        )
-      );
-    };
-  };
-
   config = lib.mkIf cfg.enable {
-    # finit has explicit sysklogd support, requires `logger` to be available in `PATH`
-    finit.path = [
+    # dinit has explicit sysklogd support, requires `logger` to be available in `PATH`
+    dinit.path = [
       cfg.package
     ];
 
-    finit.services.syslogd = {
+    dinit.services.syslogd = {
       description = "system logging daemon";
       runlevels = "S0123456789";
       conditions =
@@ -83,14 +58,14 @@ in
     environment.etc."syslog.conf".source =
       lib.mkDefault "${cfg.package}/share/doc/sysklogd/syslog.conf";
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/syslogd.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/syslogd.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."syslog.d/nixos.conf".source}
       # ${config.environment.etc."syslog.conf".source}
     '';
 
-    system.switch.inhibitors.syslogd = config.finit.services.syslogd.command;
+    system.switch.inhibitors.syslogd = config.dinit.services.syslogd.command;
   };
 }

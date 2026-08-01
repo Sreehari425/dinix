@@ -87,7 +87,7 @@ in
       };
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /run/dbus 0755 messagebus messagebus"
       "d /run/lock/subsys 0755 messagebus messagebus"
       "d /var/lib/dbus 0755 messagebus messagebus"
@@ -120,7 +120,7 @@ in
       permissions = "u+rx,g+rx,o-rx";
     };
 
-    finit.services.dbus = {
+    dinit.services.dbus = {
       description = "d-bus message bus daemon";
       runlevels = "S123456789";
       conditions = "service/syslogd/ready";
@@ -134,8 +134,8 @@ in
       };
     };
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/dbus.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/dbus.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."dbus-1".source}

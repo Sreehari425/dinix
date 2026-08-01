@@ -132,11 +132,11 @@ in
     environment.systemPackages = [ cfg.package ];
     environment.etc."vnstat.conf".source = format.generate "vnstat.conf" cfg.settings;
 
-    finit.tmpfiles.rules = lib.optionals (cfg.settings.DatabaseDir == "/var/lib/vnstat") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.settings.DatabaseDir == "/var/lib/vnstat") [
       "d ${cfg.settings.DatabaseDir} 0750 ${cfg.user} ${cfg.group}"
     ];
 
-    finit.services.vnstat = {
+    dinit.services.vnstat = {
       inherit (cfg) user group;
 
       description = "vnStat network traffic monitor";
@@ -147,8 +147,8 @@ in
       log = lib.mkDefault cfg.debug;
     };
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/vnstat.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/vnstat.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."vnstat.conf".source}

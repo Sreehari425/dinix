@@ -87,7 +87,7 @@ in
       }
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/cache/tuigreet - greeter greeter - -"
     ];
   };

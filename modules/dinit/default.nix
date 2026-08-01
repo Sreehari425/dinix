@@ -7,17 +7,15 @@
 let
   cfg = config.dinit;
 
-  commandType = lib.types.coercedTo lib.types.package (value: "${value}") lib.types.str;
-
   rootTasks = lib.filterAttrs (
     name: task:
     task.enable
     && name != "ctrl-alt-del"
-    # These tasks belong to the Finit-based boot layout.  Initrd module
+    # These tasks belong to the Dinit-based boot layout.  Initrd module
     # loading is handled separately, while the test root already provides a
     # mounted Nix store and does not need wrapper generation during boot.
     && !(config.dinit.enable && lib.elem name [ "modprobe" "remount-nix-store" "suid-sgid-wrappers" ])
-  ) config.finit.tasks;
+  ) config.dinit.tasks;
 
   enabled = attrs: lib.filterAttrs (_: value: value.enable) attrs;
 
@@ -34,7 +32,8 @@ let
 
   dependencies = service:
     lib.unique (
-      lib.filter (value: value != null) (map conditionToDependency (service.conditions or [ ]))
+      (service.dependsOn or [ ])
+      ++ lib.filter (value: value != null) (map conditionToDependency (service.conditions or [ ]))
     );
 
   dependencyLines = service:
@@ -42,7 +41,13 @@ let
 
   environmentFile = service:
     pkgs.writeText "dinit-${service.name}.env" (
-      lib.generators.toKeyValue { } service.environment
+      lib.generators.toKeyValue { } (
+        cfg.environment
+        // lib.optionalAttrs ((cfg.path ++ (service.path or [ ])) != [ ]) {
+          PATH = lib.makeBinPath (cfg.path ++ (service.path or [ ]));
+        }
+        // service.environment
+      )
     );
 
   commandForDinit = service:
@@ -63,7 +68,7 @@ let
   processService = name: service: ''
     type = process
     command = ${commandForDinit (service // { inherit name; })}
-    restart = ${if service.respawn or false then "true" else "false"}
+    restart = ${if (service.respawn or false) || (service.restart or 0) != 0 then "true" else "false"}
     ${lib.optionalString (service.log or false != false) "logfile = /var/log/${name}.log"}
     ${common service}
   '';
@@ -97,7 +102,7 @@ let
         mode = "direct-symlink";
         text = processService name service;
       };
-    }) (enabled config.finit.services)
+    }) (enabled config.dinit.services)
     // lib.mapAttrs' (name: task: {
       name = "dinit.d/task-${name}";
       value = {
@@ -121,7 +126,7 @@ let
         restart = true
       '';
     };
-  }) (enabled config.finit.ttys);
+  }) (enabled config.dinit.ttys);
 
   runFiles = lib.mapAttrs' (name: run: {
     name = "dinit.d/run-${name}";
@@ -129,17 +134,17 @@ let
       mode = "direct-symlink";
       text = taskService name run;
     };
-  }) (enabled config.finit.run);
+  }) (enabled config.dinit.run);
 
   bootDependencies =
-    (map (name: name) (lib.attrNames (enabled config.finit.services)))
+    (map (name: name) (lib.attrNames (enabled config.dinit.services)))
     ++ (map (name: "task-${name}") (lib.attrNames rootTasks))
-    ++ (lib.attrNames (enabled config.finit.ttys))
-    ++ (map (name: "run-${name}") (lib.attrNames (enabled config.finit.run)));
+    ++ (lib.attrNames (enabled config.dinit.ttys))
+    ++ (map (name: "run-${name}") (lib.attrNames (enabled config.dinit.run)));
 
   initrdTasks = lib.filterAttrs (
     name: task: task.enable && name != "switch-root"
-  ) config.boot.initrd.finit.tasks;
+  ) config.boot.initrd.dinit.tasks;
 
   initrdTaskFiles = lib.mapAttrsToList (name: task: {
     target = "/etc/dinit.d/task-${name}";
@@ -148,7 +153,7 @@ let
 
   initrdTaskNames = map (name: "task-${name}") (lib.attrNames initrdTasks);
 
-  initrdServices = lib.filterAttrs (_: service: service.enable) config.boot.initrd.finit.services;
+  initrdServices = lib.filterAttrs (_: service: service.enable) config.boot.initrd.dinit.services;
 
   initrdServiceFiles = lib.mapAttrsToList (name: service: {
     target = "/etc/dinit.d/${name}";
@@ -159,7 +164,7 @@ let
 
   initrdRuns = lib.filterAttrs (
     name: run: run.enable && name != "switch-root" && name != "setup-stdio"
-  ) config.boot.initrd.finit.run;
+  ) config.boot.initrd.dinit.run;
 
   initrdRunFiles = lib.mapAttrsToList (name: run: {
     target = "/etc/dinit.d/run-${name}";
@@ -168,39 +173,6 @@ let
 
   initrdRunNames = map (name: "run-${name}") (lib.attrNames initrdRuns);
 
-  customService = name: service: ''
-    type = process
-    command = ${service.command}
-    restart = ${if service.restart then "true" else "false"}
-    ${lib.optionalString (service.description != null) "# ${service.description}"}
-    ${lib.concatMapStringsSep "\n" (dependency: "depends-on: ${dependency}") service.dependsOn}
-    ${lib.optionalString (service.user != null) "run-as = ${service.user}"}
-  '';
-
-  customTask = name: task: ''
-    type = scripted
-    command = ${task.command}
-    restart = false
-    ${lib.optionalString (task.description != null) "# ${task.description}"}
-    ${lib.concatMapStringsSep "\n" (dependency: "depends-on: ${dependency}") task.dependsOn}
-  '';
-
-  customFiles =
-    lib.mapAttrs' (name: service: {
-      name = "dinit.d/${name}";
-      value = {
-        mode = "direct-symlink";
-        text = customService name service;
-      };
-    }) (enabled cfg.services)
-    // lib.mapAttrs' (name: task: {
-      name = "dinit.d/${name}";
-      value = {
-        mode = "direct-symlink";
-        text = customTask name task;
-      };
-    }) (enabled cfg.tasks);
-
   targetFiles = lib.mapAttrs' (name: target: {
     name = "dinit.d/${name}";
     value = {
@@ -208,9 +180,6 @@ let
       text = targetService name target.dependsOn;
     };
   }) (enabled cfg.targets);
-
-  customBootDependencies =
-    (lib.attrNames (enabled cfg.services)) ++ (lib.attrNames (enabled cfg.tasks));
 
   switchRootScript = pkgs.writeText "dinit-initrd-switch-root" ''
     set -eu
@@ -233,65 +202,23 @@ let
   initrdBootDependencies = initrdServiceNames ++ initrdTaskNames ++ initrdRunNames;
 in
 {
-  options.dinit = {
-    enable = lib.mkEnableOption "dinit as the system service manager";
-
-    package = lib.mkOption {
-      type = lib.types.package;
-      default = pkgs.dinit;
-      defaultText = lib.literalExpression "pkgs.dinit";
-      description = "The dinit package used as PID 1 and for service control.";
-    };
-
-    services = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "this dinit service" // { default = true; };
-          command = lib.mkOption { type = commandType; description = "Command to supervise."; };
-          dependsOn = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; };
-          description = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
-          user = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
-          restart = lib.mkOption { type = lib.types.bool; default = true; };
-        };
-      });
-      default = { };
-      description = "Dinit process services.";
-    };
-
-    tasks = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "this dinit task" // { default = true; };
-          command = lib.mkOption { type = commandType; description = "Command to execute."; };
-          dependsOn = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; };
-          description = lib.mkOption { type = lib.types.nullOr lib.types.str; default = null; };
-        };
-      });
-      default = { };
-      description = "Dinit scripted one-shot tasks.";
-    };
-
-    targets = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.submodule {
-        options = {
-          enable = lib.mkEnableOption "this dinit target" // { default = true; };
-          dependsOn = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; };
-        };
-      });
-      default = { };
-      description = "Dinit internal target services.";
-    };
-  };
+  imports = [
+    ./initrd.nix
+    ./mount.nix
+    ./options.nix
+    ./stage1-options.nix
+    ./tmpfiles.nix
+  ];
 
   config = lib.mkIf cfg.enable {
     boot.init = "${cfg.package}/bin/dinit";
 
     environment.systemPackages = [ cfg.package ];
 
-    environment.etc = serviceFiles // ttyFiles // runFiles // customFiles // targetFiles // {
+    environment.etc = serviceFiles // ttyFiles // runFiles // targetFiles // {
       "dinit.d/boot" = {
         mode = "direct-symlink";
-        text = targetService "boot" (bootDependencies ++ customBootDependencies);
+        text = targetService "boot" bootDependencies;
       };
     };
 

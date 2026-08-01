@@ -63,7 +63,7 @@ in
       '';
     };
 
-    finit.ttys = lib.genAttrs cfg.ttys (
+    dinit.ttys = lib.genAttrs cfg.ttys (
       device:
       {
         description = "getty on ${device}";

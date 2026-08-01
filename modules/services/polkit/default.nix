@@ -83,7 +83,7 @@ in
       cfg.package.out
     ];
 
-    finit.services.polkit = {
+    dinit.services.polkit = {
       description = "policykit authorization manager";
       conditions = "service/dbus/ready";
       command =

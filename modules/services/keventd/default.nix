@@ -14,7 +14,7 @@ in
       type = lib.types.bool;
       default = false;
       description = ''
-        Whether to enable [keventd](${pkgs.finit.meta.homepage}) as a system service.
+        Whether to enable [keventd](${pkgs.dinit.meta.homepage}) as a system service.
       '';
     };
 
@@ -50,8 +50,8 @@ in
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = lib.versionAtLeast config.finit.package.version "5.0";
-        message = "finit version must be at least 5.0";
+        assertion = lib.versionAtLeast config.dinit.package.version "5.0";
+        message = "dinit version must be at least 5.0";
       }
     ];
 
@@ -68,8 +68,8 @@ in
       pkgs.util-linux
     ];
 
-    # contribute finit's bundled rules to the udev packages list.
-    services.udev.packages = [ config.finit.package ];
+    # contribute dinit's bundled rules to the udev packages list.
+    services.udev.packages = [ config.dinit.package ];
 
     environment.etc."udev/rules.d".source =
       pkgs.runCommand "keventd-rules"
@@ -103,19 +103,19 @@ in
           done
         '';
 
-    finit.services.keventd = {
+    dinit.services.keventd = {
       inherit (cfg) path;
 
       description = "device event daemon (keventd)";
-      command = "${config.finit.package}/libexec/finit/keventd " + lib.escapeShellArgs cfg.extraArgs;
+      command = "${config.dinit.package}/libexec/dinit/keventd " + lib.escapeShellArgs cfg.extraArgs;
       runlevels = "S12345789";
       cgroup.name = "init";
       notify = "pid";
       log = true;
     };
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/keventd.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/keventd.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."udev/rules.d".source}
@@ -135,15 +135,15 @@ in
 
     # build out the default initramfs image
     boot.initrd = {
-      finit.services.keventd = {
-        command = "${config.finit.package}/libexec/finit/keventd -n -c";
+      dinit.services.keventd = {
+        command = "${config.dinit.package}/libexec/dinit/keventd -n -c";
         notify = "pid";
       };
 
       contents = [
         {
           target = "/etc/udev/rules.d";
-          source = "${config.finit.package}/lib/udev/rules.d";
+          source = "${config.dinit.package}/lib/udev/rules.d";
         }
       ];
     };

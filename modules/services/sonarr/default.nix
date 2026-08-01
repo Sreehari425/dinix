@@ -144,11 +144,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    finit.tmpfiles.rules = lib.optionals (cfg.dataDir == "/var/lib/sonarr") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.dataDir == "/var/lib/sonarr") [
       "d ${cfg.dataDir} 0700 ${cfg.user} ${cfg.group}"
     ];
 
-    finit.services.sonarr = {
+    dinit.services.sonarr = {
       inherit (cfg) user group;
 
       description = "sonarr";

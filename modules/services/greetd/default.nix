@@ -40,7 +40,7 @@ in
       };
     };
 
-    finit.services.greetd = {
+    dinit.services.greetd = {
       description = "greeter daemon";
       runlevels = "34";
       conditions = [
@@ -72,7 +72,7 @@ in
       greeter = { };
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/cache/tuigreet - greeter greeter"
     ];
 

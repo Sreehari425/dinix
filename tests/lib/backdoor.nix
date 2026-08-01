@@ -48,7 +48,7 @@ let
 
     # wait for the serial console to be available, then redirect stderr to it
     # this matches NixOS behavior and avoids escape sequences from programs
-    # like initctl being sent back through the backdoor
+    # like dinitctl being sent back through the backdoor
     while ! exec 2> /dev/${qemuSerialDevice}; do
       sleep 0.1
     done
@@ -82,8 +82,8 @@ in
       pkgs.iputils
     ];
 
-    # backdoor service for finit
-    finit.services.backdoor = {
+    # backdoor service for dinit
+    dinit.services.backdoor = {
       description = "test driver backdoor shell";
       command = backdoorScript;
       runlevels = "234";

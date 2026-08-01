@@ -40,7 +40,7 @@ in
       cfg.package
     ];
 
-    finit.services.incusd = {
+    dinit.services.incusd = {
       description = "incus container hypervisor";
       conditions = "service/syslogd/ready";
 

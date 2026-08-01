@@ -62,13 +62,13 @@ in
       });
     '';
 
-    finit.services.power-profiles-daemon = {
+    dinit.services.power-profiles-daemon = {
       description = "power profiles daemon";
       conditions = "service/dbus/ready";
       command = "${cfg.package}/libexec/power-profiles-daemon";
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/power-profiles-daemon"
     ];
   };

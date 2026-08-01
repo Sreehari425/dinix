@@ -47,7 +47,7 @@ in
     services.dbus.packages = [ cfg.package ];
     services.udev.packages = [ cfg.package ];
 
-    finit.services.upower = {
+    dinit.services.upower = {
       description = "daemon for power management";
       conditions = "service/dbus/ready";
       command = "${cfg.package}/libexec/upowerd";

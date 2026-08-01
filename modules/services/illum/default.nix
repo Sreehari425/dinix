@@ -41,7 +41,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    finit.services.illum = {
+    dinit.services.illum = {
       description = "backlight adjustment service";
       command = lib.getExe cfg.package;
       conditions = "service/syslogd/ready";

@@ -210,7 +210,7 @@ in
       debug = cfg.debug;
     };
 
-    finit.services.dhcpcd = {
+    dinit.services.dhcpcd = {
       description = "dhcp client";
       command = "${lib.getExe cfg.package} " + lib.escapeShellArgs cfg.extraArgs;
       conditions = "service/syslogd/ready";
@@ -220,7 +220,7 @@ in
       ];
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/db/dhcpcd - dhcpcd"
       "d /var/lib/dhcpcd - dhcpcd dhcpcd"
     ];

@@ -93,7 +93,7 @@ in
       )
     );
 
-    finit.services.sshguard = {
+    dinit.services.sshguard = {
       command = lib.getExe cfg.package;
       conditions = [
         "service/syslogd/ready"

@@ -1,7 +1,7 @@
 # several functions in this file were copied from `nixpkgs` with minimal to no modification
 { lib }:
 {
-  # simple path escape into a name safe for use as a finit stanza name and conditions
+  # simple path escape into a name safe for use as a dinit stanza name and conditions
   escapePath =
     s: if s == "/" then "root" else lib.replaceStrings [ "/" ] [ "-" ] (lib.removePrefix "/" s);
 

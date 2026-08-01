@@ -128,7 +128,7 @@ in
       ln -sfn /run /var/run
     '';
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /etc"
       "d /run"
       "d /tmp"
@@ -192,15 +192,11 @@ in
             ${coreutils}/bin/ln -s ${config.boot.initrd.package}/initrd $out/initrd
           ''
           + ''
-            cp ${
-              if config.dinit.enable then ../../dinit/switch-to-configuration.sh
-              else ../../finit/switch-to-configuration.sh
-            } $out/bin/switch-to-configuration
+            cp ${../../dinit/switch-to-configuration.sh} $out/bin/switch-to-configuration
             substituteInPlace $out/bin/switch-to-configuration \
               --subst-var out \
               --subst-var-by bash ${pkgs.bash} \
               --subst-var-by distroId dinix \
-              --subst-var-by finit ${config.finit.package} \
               --subst-var-by dinit ${config.dinit.package} \
               --subst-var-by logger ${pkgs.util-linuxMinimal} \
               --subst-var-by coreutils ${config.programs.coreutils.package} \

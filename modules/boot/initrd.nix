@@ -96,7 +96,7 @@ in
 
   config = {
     warnings = lib.optionals (cfg.fileSystemImportCommands != "") [
-      "boot.initrd.fileSystemImportCommands has been deprecated; please use boot.initrd.finit.tasks instead"
+      "boot.initrd.fileSystemImportCommands has been deprecated; please use boot.initrd.dinit.tasks instead"
     ];
 
     boot.initrd.supportedFilesystems = lib.mapAttrs' (

@@ -298,7 +298,7 @@ in
         lib.mkIf cfg.sftp.enable "${cfg.sftp.executable} ${lib.concatStringsSep " " cfg.sftp.flags}";
     };
 
-    finit.tasks.ssh-keygen = {
+    dinit.tasks.ssh-keygen = {
       description = "generate ssh host keys";
       log = true;
       command = pkgs.writeShellScript "ssh-keygen.sh" ''
@@ -308,7 +308,7 @@ in
       '';
     };
 
-    finit.services.sshd = {
+    dinit.services.sshd = {
       description = "openssh daemon";
       conditions = [
         "net/lo/up"
@@ -320,8 +320,8 @@ in
       cgroup.name = "user";
     };
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/sshd.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/sshd.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."ssh/sshd_config".source}
@@ -358,7 +358,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/sshd 0755"
     ];
 

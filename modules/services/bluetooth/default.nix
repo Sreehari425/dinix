@@ -64,7 +64,7 @@ in
     services.dbus.packages = [ cfg.package ];
     services.udev.packages = [ cfg.package ];
 
-    finit.services.bluetooth = {
+    dinit.services.bluetooth = {
       description = "bluetooth service";
       conditions = "service/dbus/ready";
       command =

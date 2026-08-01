@@ -285,7 +285,7 @@ in
   config = lib.mkIf cfg.enable {
     environment.etc."nix/nix.conf".source = configFile;
 
-    finit.services.nix-daemon = {
+    dinit.services.nix-daemon = {
       description = "nix daemon";
       conditions = "service/syslogd/ready";
       command = daemonCommand;
@@ -303,7 +303,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /nix/var/nix/daemon-socket 0755 root root - -"
 
       "R! /nix/var/nix/gcroots/tmp           -    -    -    - -"
@@ -345,8 +345,8 @@ in
       ];
     };
 
-    # TODO: add finit.services.restartTriggers option
-    environment.etc."finit.d/nix-daemon.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.restartTriggers option
+    environment.etc."dinit.d/nix-daemon.conf".text = lib.mkAfter ''
 
       # standard nixos trick to force a restart when something has changed
       # ${config.environment.etc."nix/nix.conf".source}

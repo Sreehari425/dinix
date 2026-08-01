@@ -54,7 +54,7 @@ in
       text = lib.concatStringsSep "\n" cfg.deny;
     };
 
-    finit.services.atd = {
+    dinit.services.atd = {
       description = "deferred execution scheduler";
       conditions = "service/syslogd/ready";
       command = "${pkgs.at}/bin/atd -f " + lib.escapeShellArgs cfg.extraArgs;
@@ -80,7 +80,7 @@ in
       setgid = true;
     });
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/spool/atjobs 1770 atd atd"
       "f /var/spool/atjobs/.SEQ 0600 atd atd"
       "d /var/spool/atspool 1770 atd atd"

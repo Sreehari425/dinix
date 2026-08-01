@@ -76,11 +76,11 @@ in
     # Console node ownership and mode; mdevd has no defaults for this.
     services.mdevd.coldplugRules = "-console 0:${toString config.ids.gids.tty} 600";
 
-    finit.tasks.loadkmap = loadkmapTask;
+    dinit.tasks.loadkmap = loadkmapTask;
 
-    boot.initrd.finit.tasks.loadkmap = initrdLoadkmapTask;
+    boot.initrd.dinit.tasks.loadkmap = initrdLoadkmapTask;
 
-    finit.tasks.setvesablank =
+    dinit.tasks.setvesablank =
       let
         value = if cfg.setvesablank then "on" else "off";
       in

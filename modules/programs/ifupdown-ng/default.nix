@@ -197,7 +197,7 @@ in
       in
       lib.concatStringsSep "\n\n" (lib.optional (cfg.auto != [ ]) autoSection ++ ifaceBlocks);
 
-    finit.tasks.ifupdown-ng = {
+    dinit.tasks.ifupdown-ng = {
       description = "bring up network interfaces";
       log = true;
       remain = true;

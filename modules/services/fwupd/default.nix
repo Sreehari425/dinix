@@ -86,7 +86,7 @@ in
     services.dbus.packages = [ cfg.package ];
     services.udev.packages = [ cfg.package ];
 
-    finit.services.fwupd = {
+    dinit.services.fwupd = {
       description = "";
       command =
         "${cfg.package}/libexec/fwupd/fwupd --no-timestamp" + lib.optionalString cfg.debug " --verbose";
@@ -98,7 +98,7 @@ in
       };
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "/var/lib/fwupd"
       "/var/cache/fwupd"
     ];

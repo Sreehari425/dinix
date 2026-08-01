@@ -78,8 +78,8 @@ in
     environment.etc."NetworkManager/conf.d/00-nixos.conf".source =
       format.generate "00-nixos.conf" cfg.settings;
 
-    # TODO: add finit.services.reloadTriggers option
-    environment.etc."finit.d/network-manager.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.reloadTriggers option
+    environment.etc."dinit.d/network-manager.conf".text = lib.mkAfter ''
 
       # reload trigger
       # ${config.environment.etc."NetworkManager/conf.d/00-nixos.conf".source}
@@ -89,7 +89,7 @@ in
     services.dbus.packages = packages;
     services.udev.packages = packages;
 
-    finit.services.network-manager = {
+    dinit.services.network-manager = {
       description = "network manager service";
       conditions = "service/dbus/ready";
       command = "${cfg.package}/bin/NetworkManager -n";

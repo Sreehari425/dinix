@@ -70,7 +70,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    finit.services.jellyfin = {
+    dinit.services.jellyfin = {
       inherit (cfg) user group;
 
       description = "jellyfin media server";
@@ -79,7 +79,7 @@ in
       nohup = true;
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/cache/jellyfin 0700 ${cfg.user} ${cfg.group}"
       "d /var/log/jellyfin 0750 ${cfg.user} ${cfg.group}"
     ]

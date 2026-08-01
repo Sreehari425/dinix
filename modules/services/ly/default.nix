@@ -71,8 +71,8 @@ in
       # defer to pam for PATH
       path = null;
 
-      restart_cmd = "${config.finit.package}/bin/initctl reboot";
-      shutdown_cmd = "${config.finit.package}/bin/initctl poweroff";
+      restart_cmd = "${config.dinit.package}/bin/dinitctl reboot";
+      shutdown_cmd = "${config.dinit.package}/bin/dinitctl poweroff";
       brightness_up_cmd = lib.mkDefault "${lib.getExe brightnessctl} -q s +10%";
       brightness_down_cmd = lib.mkDefault "${lib.getExe brightnessctl} -q s 10%-";
     }
@@ -118,9 +118,9 @@ in
     };
 
     # Disable the tty that ly runs on
-    finit.ttys."tty${toString cfg.tty}".enable = false;
+    dinit.ttys."tty${toString cfg.tty}".enable = false;
 
-    finit.services.ly = {
+    dinit.services.ly = {
       description = "ly terminal display/login manager";
       runlevels = "34";
       conditions = [

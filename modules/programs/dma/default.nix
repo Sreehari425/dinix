@@ -54,7 +54,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/mail 2775 root mail - -"
       "d /var/spool/dma 2775 root mail - -"
     ];

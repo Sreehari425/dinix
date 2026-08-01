@@ -25,8 +25,7 @@ let
       (lib.hiPrio pkgs.util-linux.mount)
       pkgs.bash
     ]
-    ++ lib.optional (!config.dinit.enable) config.finit.package
-    ++ lib.optional config.dinit.enable config.dinit.package
+    ++ [ config.dinit.package ]
     ++ lib.optionals config.services.mdevd.enable [
       config.services.mdevd.package
       pkgs.execline
@@ -69,90 +68,17 @@ in
   };
 
   config.boot.initrd = {
-    finit.tasks.modprobe = lib.mkIf config.dinit.enable {
+    dinit.tasks.modprobe = {
       command = "/bin/modprobe --all ${lib.concatStringsSep " " cfg.kernelModules}";
-    };
-
-    finit.run.setup-stdio = {
-      priority = 100;
-      script = ''
-        ln -sfn /proc/self/fd    /dev/fd
-        ln -sfn /proc/self/fd/0  /dev/stdin
-        ln -sfn /proc/self/fd/1  /dev/stdout
-        ln -sfn /proc/self/fd/2  /dev/stderr
-      '';
-    };
-
-    finit.run.switch-root = {
-      runlevels = "1";
-      script = ''
-        # process the kernel command line to find init=
-        stage2Init=/init
-        for o in $(cat /proc/cmdline); do
-          case $o in
-            init=*)
-              set -- $(IFS==; echo $o)
-              stage2Init=$2
-              ;;
-          esac
-        done
-
-        # TODO: modify `initctl switch-root` call in finit to have a proper return code
-        if [ ! -d /sysroot ] || ! mountpoint -q /sysroot || [ ! -x "/sysroot$stage2Init" ]; then
-          cat > /dev/console <<EOF
-
-        ==========================================
-        ${
-          if !grantAccess then
-            ''
-              rescue shell is disabled
-
-              rebooting in 10s
-            ''
-          else
-            ''
-              to diagnose:   initctl status; initctl cond dump
-              to continue:   initctl switch-root /sysroot $stage2Init
-              to reboot:     reboot -f
-            ''
-        }
-
-        EOF
-          ${
-            if !grantAccess then
-              ''
-                sleep 10
-                exec reboot -f
-              ''
-            else
-              # exit non-zero so finit emits <run/switch-root/failure>,
-              # which triggers the rescue tty in finit.conf
-              ''
-                exit 1
-              ''
-          }
-        fi
-
-        exec initctl switch-root /sysroot "$stage2Init"
-      '';
-    };
-
-    finit.ttys.rescue = {
-      runlevels = "1";
-      device = "@console";
-      conditions = "run/switch-root/failure";
-      rescue = true;
     };
 
     contents = [
       {
         target = "/init";
-        source =
-          if config.dinit.enable then
-            pkgs.writeTextFile {
-              name = "dinix-initrd-init";
-              executable = true;
-              text = lib.concatStringsSep "\n" [
+        source = pkgs.writeTextFile {
+          name = "dinix-initrd-init";
+          executable = true;
+          text = lib.concatStringsSep "\n" [
                 "#!/bin/sh"
                 "set -u"
                 ""
@@ -169,8 +95,7 @@ in
                 "/bin/busybox ln -sfn /proc/self/fd/1 /dev/stdout"
                 "/bin/busybox ln -sfn /proc/self/fd/2 /dev/stderr"
                 ""
-                (if config.dinit.enable then
-                  ''
+                ''
                     /bin/dinit &
                     dinitPid=$!
                     while [ ! -e /run/dinit-boot-complete ]; do
@@ -191,7 +116,7 @@ in
                       esac
                     done
 
-                    /bin/busybox mkdir -p /sysroot/dev /sysroot/etc/dinit.d /sysroot/etc/finit.d /sysroot/proc /sysroot/run /sysroot/sys /sysroot/tmp /sysroot/var
+                    /bin/busybox mkdir -p /sysroot/dev /sysroot/etc/dinit.d /sysroot/proc /sysroot/run /sysroot/sys /sysroot/tmp /sysroot/var
                     /bin/busybox mount --bind /dev /sysroot/dev
                     /bin/busybox mount --bind /proc /sysroot/proc
                     /bin/busybox mount --bind /sys /sysroot/sys
@@ -200,12 +125,8 @@ in
                     /bin/busybox ln -sfn "$stage2Root" /sysroot/run/current-system
                     exec /bin/busybox switch_root /sysroot "$stage2Init"
                   ''
-                else
-                  "exec /bin/dinit")
-              ];
-            }
-          else
-            "${config.finit.package}/bin/finit";
+          ];
+        };
       }
       {
         target = "/bin";
@@ -276,21 +197,6 @@ in
             root:${password}:1:0:99999:7:::
           '';
       }
-    ]
-    ++ lib.optionals (!config.dinit.enable) [
-      { source = "${config.finit.package}/libexec"; }
-      { source = "${config.finit.package}/lib/finit/"; }
-      { source = "${config.finit.package}/lib/finit/plugins/bootmisc.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/modules-load.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/netlink.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/pidfile.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/procps.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/sys.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/tty.so"; }
-      { source = "${config.finit.package}/lib/finit/plugins/usr.so"; }
-      { source = "${config.finit.package}/lib/finit/rescue.conf"; }
-      { source = "${config.finit.package}/lib/finit/tmpfiles.d"; }
-      { source = "${config.finit.package}/lib/tmpfiles.d"; }
     ];
   };
 }

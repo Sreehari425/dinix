@@ -37,7 +37,7 @@ let
         default = "";
         example = "";
         description = ''
-          A place for `finit` configuration options which have not been added to the `nix` module yet.
+          A place for `dinit` configuration options which have not been added to the `nix` module yet.
         '';
       };
 
@@ -47,7 +47,7 @@ let
         default = [ ];
         example = "pid/syslog";
         description = ''
-          See [upstream documentation](https://finit-project.github.io/conditions/) for details.
+          See [upstream documentation](https://dinit-project.github.io/conditions/) for details.
         '';
       };
 
@@ -55,7 +55,7 @@ let
         type = with lib.types; nullOr str;
         default = null;
         description = ''
-          A human-readable description of this service, displayed by `initctl`.
+          A human-readable description of this service, displayed by `dinitctl`.
         '';
       };
 
@@ -63,7 +63,7 @@ let
         type = lib.types.str; # TODO: string  matching 0-9S
         default = "S";
         description = ''
-          See [upstream documentation](https://finit-project.github.io/runlevels/) for details.
+          See [upstream documentation](https://dinit-project.github.io/runlevels/) for details.
         '';
       };
     };
@@ -105,7 +105,7 @@ let
             Give this stanza a controlling terminal on the given device, connecting its `stdin`, `stdout`, and
             `stderr` to the TTY. May be a device node like `/dev/ttyS0` or the special keyword `@console`.
 
-            See [upstream documentation](https://finit-project.github.io/config/tty/) for additional details.
+            See [upstream documentation](https://dinit-project.github.io/config/tty/) for additional details.
           '';
         };
       };
@@ -148,10 +148,10 @@ let
           "pid"
           "s6"
         ];
-        default = config.finit.readiness;
-        defaultText = lib.literalExpression "config.finit.readiness";
+        default = config.dinit.readiness;
+        defaultText = lib.literalExpression "config.dinit.readiness";
         description = ''
-          See [upstream documentation](https://finit-project.github.io/config/service-sync/) for details.
+          See [upstream documentation](https://dinit-project.github.io/config/service-sync/) for details.
         '';
       };
 
@@ -159,9 +159,9 @@ let
         type = with lib.types; nullOr (ints.between (-1) 255);
         default = null;
         description = ''
-          The number of times `finit` tries to restart a crashing service. When
+          The number of times `dinit` tries to restart a crashing service. When
           this limit is reached the service is marked crashed and must be restarted
-          manually with `initctl restart NAME`. When `null`, finit's built-in
+          manually with `dinitctl restart NAME`. When `null`, dinit's built-in
           default applies.
         '';
       };
@@ -199,7 +199,7 @@ let
           default = null;
           description = ''
             Embedded systems may want to enable automatic `device` by supplying the special `@console` device. This
-            works regardless weather the system uses `ttyS0`, `ttyAMA0`, `ttyMXC0`, or anything else. `finit` figures
+            works regardless weather the system uses `ttyS0`, `ttyAMA0`, `ttyMXC0`, or anything else. `dinit` figures
             it out by querying sysfs: `/sys/class/tty/console/active`.
           '';
         };
@@ -306,7 +306,7 @@ let
     );
 in
 {
-  options.boot.initrd.finit = {
+  options.boot.initrd.dinit = {
     services = lib.mkOption {
       type =
         with lib.types;
@@ -320,7 +320,7 @@ in
         An attribute set of services, or daemons, to be monitored and automatically
         restarted if they exit prematurely.
 
-        See [upstream documentation](https://finit-project.github.io/config/services/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/services/) for additional details.
       '';
     };
 
@@ -334,9 +334,9 @@ in
         ]);
       default = { };
       description = ''
-        An attribute set of one-shot commands to be executed by `finit`.
+        An attribute set of one-shot commands to be executed by `dinit`.
 
-        See [upstream documentation](https://finit-project.github.io/config/task-and-run/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/task-and-run/) for additional details.
       '';
     };
 
@@ -354,7 +354,7 @@ in
         An attribute set of one-shot commands to run in sequence when entering a runlevel. `run` commands
         are guaranteed to be completed before running the next command. Useful when serialization is required.
 
-        See [upstream documentation](https://finit-project.github.io/config/task-and-run/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/task-and-run/) for additional details.
       '';
     };
 
@@ -367,65 +367,11 @@ in
         ]);
       default = { };
       description = ''
-        An attribute set of TTYs that `finit` should manage.
+        An attribute set of TTYs that `dinit` should manage.
 
-        See [upstream documentation](https://finit-project.github.io/config/tty/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/tty/) for additional details.
       '';
     };
   };
 
-  config = {
-    boot.initrd.contents =
-      let
-        serviceTree = lib.mapAttrsToList (name: service: {
-          target =
-            if service.id != "%i" then "/etc/finit.d/${name}.conf" else "/etc/finit.d/available/${name}.conf";
-          source = pkgs.writeText "${name}.conf" (serviceStr "service" service);
-        }) (lib.filterAttrs (_: service: service.enable) cfg.finit.services);
-
-        taskTree = lib.mapAttrsToList (name: task: {
-          target =
-            if task.id != "%i" then "/etc/finit.d/${name}.conf" else "/etc/finit.d/available/${name}.conf";
-          source = pkgs.writeText "${name}.conf" (serviceStr "task" task);
-        }) (lib.filterAttrs (_: task: task.enable) cfg.finit.tasks);
-
-        run = lib.concatMapStringsSep "\n" (serviceStr "run") (
-          lib.sortProperties (lib.concatMap (v: lib.optional v.enable v) (lib.attrValues cfg.finit.run))
-        );
-
-        tty = lib.concatStringsSep "\n" (
-          lib.concatMap (v: lib.optional v.enable (serviceStr "tty" v)) (lib.attrValues cfg.finit.ttys)
-        );
-
-        mkScriptFile =
-          _: svc:
-          lib.optional (svc.enable && svc.script != "") {
-            source = svc.command;
-          };
-
-        scriptFiles = lib.concatLists (
-          lib.mapAttrsToList mkScriptFile cfg.finit.tasks ++ lib.mapAttrsToList mkScriptFile cfg.finit.run
-        );
-      in
-      [
-        {
-          target = "/etc/finit.conf";
-          source = pkgs.writeText "finit.conf" ''
-            PATH=/bin:/sbin:/usr/bin:/usr/local/bin
-
-            readiness none
-            runlevel 1
-
-            # ttys
-            ${tty}
-
-            # sequential one-shot commands
-            ${run}
-          '';
-        }
-      ]
-      ++ serviceTree
-      ++ taskTree
-      ++ scriptFiles;
-  };
 }

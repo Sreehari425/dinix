@@ -85,7 +85,7 @@ in
       queryLog.type = lib.mkDefault "none";
     };
 
-    finit.services.blocky = {
+    dinit.services.blocky = {
       inherit (cfg) user group;
 
       description = "a dns proxy and ad-blocker for the local network";

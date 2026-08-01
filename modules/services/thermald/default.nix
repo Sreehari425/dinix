@@ -54,7 +54,7 @@ in
 
     services.dbus.packages = [ cfg.package ];
 
-    finit.services.thermald = {
+    dinit.services.thermald = {
       description = "thermal daemon service";
       conditions = "service/syslogd/ready";
       command = "${lib.getExe cfg.package} " + lib.escapeShellArgs cfg.extraArgs;

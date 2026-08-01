@@ -60,7 +60,7 @@ in
       ${pkgs.userborn}/bin/userborn ${configFile}
     '';
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /home"
     ]
     ++ lib.mapAttrsToList (username: opts: "d ${opts.home} 0700 ${opts.name} ${opts.group}") (

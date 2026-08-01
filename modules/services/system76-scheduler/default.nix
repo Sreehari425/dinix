@@ -49,7 +49,7 @@ in
     services.dbus.enable = true;
     services.dbus.packages = [ cfg.package ];
 
-    finit.services.system76-scheduler = {
+    dinit.services.system76-scheduler = {
       description = "system76 scheduler";
       command = "${lib.getExe cfg.package} daemon";
       reload = "${lib.getExe cfg.package} daemon reload";

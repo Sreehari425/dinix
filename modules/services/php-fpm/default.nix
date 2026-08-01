@@ -132,14 +132,14 @@ in
       daemonize = false;
     };
 
-    finit.services.php-fpm = {
+    dinit.services.php-fpm = {
       conditions = "service/syslogd/ready";
       command = "${cfg.package}/bin/php-fpm -y ${configFile}";
       reload = "${lib.getExe' config.programs.coreutils.package "kill"} -USR2 $MAINPID";
       notify = "systemd";
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /run/php-fpm"
     ];
   };

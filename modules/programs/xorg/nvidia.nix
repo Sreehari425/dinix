@@ -27,7 +27,7 @@ in
   };
 
   config = lib.mkIf (cfg.enable && config.programs.xorg.enable) {
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       # Remove the following log message:
       #    (WW) NVIDIA: Failed to bind sideband socket to
       #    (WW) NVIDIA:     '/var/run/nvidia-xdriver-b4f69129' Permission denied

@@ -170,7 +170,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = lib.optionals (cfg.settings.fcrontabs == "/var/spool/fcron") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.settings.fcrontabs == "/var/spool/fcron") [
       "d ${cfg.settings.fcrontabs} 0770 fcron fcron"
     ];
 
@@ -197,7 +197,7 @@ in
       };
     };
 
-    finit.tasks.fcrontab = {
+    dinit.tasks.fcrontab = {
       description = "reload fcrontab";
       conditions = [
         "service/syslogd/ready"
@@ -211,7 +211,7 @@ in
       path = [ cfg.package ];
     };
 
-    finit.services.fcron = {
+    dinit.services.fcron = {
       description = "fcron daemon";
       command = "${cfg.package}/bin/fcron --foreground " + lib.escapeShellArgs cfg.extraArgs;
       conditions = [

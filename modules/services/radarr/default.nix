@@ -144,11 +144,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    finit.tmpfiles.rules = lib.optionals (cfg.dataDir == "/var/lib/radarr") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.dataDir == "/var/lib/radarr") [
       "d ${cfg.dataDir} 0700 ${cfg.user} ${cfg.group}"
     ];
 
-    finit.services.radarr = {
+    dinit.services.radarr = {
       inherit (cfg) user group;
 
       description = "radarr";

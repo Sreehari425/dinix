@@ -101,7 +101,7 @@ in
 
     boot.initrd.contents = [
       {
-        # notify plymouth and the finit plymouth plugin that this is an initramfs - enables plymouth process survival across switch-root
+        # notify plymouth and the dinit plymouth plugin that this is an initramfs - enables plymouth process survival across switch-root
         target = "/etc/initrd-release";
         source = pkgs.writeText "initrd-release" "DINIX_INITRD=1\n"; # TODO: generate a proper initrd-release, depends on generating a proper /etc/os-release
       }

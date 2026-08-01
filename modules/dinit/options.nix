@@ -5,19 +5,8 @@
   ...
 }:
 let
-  cfg = config.finit;
+  cfg = config.dinit;
   format = pkgs.formats.keyValue { };
-
-  # dinix-setup plugin for early boot initialization
-  dinix-setup = pkgs.callPackage ../../pkgs/dinix-setup {
-    extraPackages = lib.unique (
-      lib.flatten (
-        lib.concatMap (v: lib.optional v.enable (v.packages or [ ])) (
-          lib.attrValues config.boot.supportedFilesystems
-        )
-      )
-    );
-  };
 
   pathOrStr = with lib.types; coercedTo path (x: "${x}") str;
   program =
@@ -68,7 +57,7 @@ let
     {
       options = {
         name = lib.mkOption {
-          type = lib.types.str; # TODO: add constraints based on finit
+          type = lib.types.str; # TODO: add constraints based on dinit
           default = name;
           description = ''
             The name of the cgroup to create.
@@ -133,7 +122,7 @@ let
         default = "";
         example = "";
         description = ''
-          A place for `finit` configuration options which have not been added to the `nix` module yet.
+          A place for `dinit` configuration options which have not been added to the `nix` module yet.
         '';
       };
 
@@ -143,15 +132,21 @@ let
         default = [ ];
         example = "pid/syslog";
         description = ''
-          See [upstream documentation](https://finit-project.github.io/conditions/) for details.
+          See [upstream documentation](https://dinit-project.github.io/conditions/) for details.
         '';
+      };
+
+      dependsOn = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ ];
+        description = "Dinit service dependencies.";
       };
 
       description = lib.mkOption {
         type = with lib.types; nullOr str;
         default = null;
         description = ''
-          A human-readable description of this service, displayed by `initctl`.
+          A human-readable description of this service, displayed by `dinitctl`.
         '';
       };
 
@@ -159,7 +154,7 @@ let
         type = lib.types.str; # TODO: string  matching 0-9S
         default = "234";
         description = ''
-          See [upstream documentation](https://finit-project.github.io/runlevels/) for details.
+          See [upstream documentation](https://dinit-project.github.io/runlevels/) for details.
         '';
       };
 
@@ -178,7 +173,7 @@ let
           description = ''
             For services that need to create their own child `cgroups` (container runtimes like `docker`, `podman`, `systemd-nspawn`, `lxc`, etc...).
 
-            See [upstream documentation](https://finit-project.github.io/config/cgroups/#cgroup-delegation) for details.
+            See [upstream documentation](https://dinit-project.github.io/config/cgroups/#cgroup-delegation) for details.
           '';
         };
 
@@ -283,7 +278,7 @@ let
             tool. This is useful for programs that do not support `syslog` on their own, which is sometimes
             the case when running in the foreground.
 
-            See [upstream documentation](https://finit-project.github.io/config/logging/) for additional details.
+            See [upstream documentation](https://dinit-project.github.io/config/logging/) for additional details.
           '';
         };
 
@@ -295,7 +290,7 @@ let
             Give this stanza a controlling terminal on the given device, connecting its `stdin`, `stdout`, and
             `stderr` to the TTY. May be a device node like `/dev/ttyS0` or the special keyword `@console`.
 
-            See [upstream documentation](https://finit-project.github.io/config/tty/) for additional details.
+            See [upstream documentation](https://dinit-project.github.io/config/tty/) for additional details.
           '';
         };
 
@@ -304,7 +299,7 @@ let
           default = false;
           description = ''
             If a service should not be automatically started, it can be configured as
-            manual. The service can then be started at any time by running `initctl start <service>`.
+            manual. The service can then be started at any time by running `dinitctl start <service>`.
           '';
         };
 
@@ -352,9 +347,9 @@ let
           type = lib.types.ints.between (-1) 255;
           default = 10;
           description = ''
-            The number of times `finit` tries to restart a crashing service. When
+            The number of times `dinit` tries to restart a crashing service. When
             this limit is reached the service is marked crashed and must be restarted
-            manually with `initctl restart NAME`.
+            manually with `dinitctl restart NAME`.
           '';
         };
 
@@ -362,7 +357,7 @@ let
           type = with lib.types; nullOr ints.unsigned;
           default = null;
           description = ''
-            The number of seconds before Finit tries to restart a crashing service, default: `2`
+            The number of seconds before Dinit tries to restart a crashing service, default: `2`
             seconds for the first five retries, then back-off to `5` seconds. The maximum of this
             configured value and the above (`2` and `5`) will be used.
           '';
@@ -416,7 +411,7 @@ let
           type = with lib.types; nullOr str;
           default = null;
           description = ''
-            See [upstream documentation](https://finit-project.github.io/config/services/) for details.
+            See [upstream documentation](https://dinit-project.github.io/config/services/) for details.
           '';
         };
 
@@ -439,9 +434,9 @@ let
               "none"
             ]);
           default = cfg.readiness;
-          defaultText = lib.literalExpression "config.finit.readiness";
+          defaultText = lib.literalExpression "config.dinit.readiness";
           description = ''
-            See [upstream documentation](https://finit-project.github.io/config/service-sync/) for details.
+            See [upstream documentation](https://dinit-project.github.io/config/service-sync/) for details.
           '';
         };
 
@@ -454,7 +449,7 @@ let
           example = "kill -HUP $MAINPID";
           description = ''
             Some services do not support `SIGHUP` but may have other ways to update the configuration of a running daemon. When
-            `reload` is defined it is preferred over `SIGHUP`. Like `systemd`, `finit` sets ``$MAINPID` as a convenience to scripts,
+            `reload` is defined it is preferred over `SIGHUP`. Like `systemd`, `dinit` sets ``$MAINPID` as a convenience to scripts,
             which in effect also allow setting `reload` to `kill -HUP $MAINPID`.
 
             ::: {.note}
@@ -472,7 +467,7 @@ let
             if value != null then "'" + (lib.removeSuffix "'" (lib.removePrefix "'" value)) + "'" else null;
           description = ''
             Some services may require alternate methods to be stopped. If `stop` is defined it is preferred over `SIGTERM`. Similar
-            to `reload`, `finit` sets `$MAINPID`.
+            to `reload`, `dinit` sets `$MAINPID`.
 
             ::: {.note}
             `stop` is called as PID 1, without any timeout! Meaning, it is up to you to ensure the script is not blocking for
@@ -486,7 +481,7 @@ let
           default = null;
           defaultText = "3";
           description = ''
-            The delay in seconds between `finit` sending a `SIGTERM` and a `SIGKILL`.
+            The delay in seconds between `dinit` sending a `SIGTERM` and a `SIGKILL`.
           '';
         };
 
@@ -529,7 +524,7 @@ let
           type = with lib.types; nullOr nonEmptyStr;
           default = null;
           description = ''
-            Explicit instance ID for the TTY. If not set, finit auto-derives it from the device name
+            Explicit instance ID for the TTY. If not set, dinit auto-derives it from the device name
             (e.g., `tty1` becomes `:1`, `ttyS0` becomes `:S0`).
           '';
         };
@@ -589,7 +584,7 @@ let
           default = null;
           description = ''
             Embedded systems may want to enable automatic `device` by supplying the special `@console` device. This
-            works regardless weather the system uses `ttyS0`, `ttyAMA0`, `ttyMXC0`, or anything else. `finit` figures
+            works regardless weather the system uses `ttyS0`, `ttyAMA0`, `ttyMXC0`, or anything else. `dinit` figures
             it out by querying sysfs: `/sys/class/tty/console/active`.
           '';
         };
@@ -622,9 +617,9 @@ let
         type = rlimitsType;
         default = { };
         description = ''
-          An attribute set of resource limits that will be apply by `finit`.
+          An attribute set of resource limits that will be apply by `dinit`.
 
-          See [upstream documentation](https://finit-project.github.io/config/runlevels/#resource-limits) for additional details.
+          See [upstream documentation](https://dinit-project.github.io/config/runlevels/#resource-limits) for additional details.
         '';
       };
     };
@@ -728,32 +723,31 @@ let
     );
 in
 {
-  options.finit = {
+  options.dinit = {
+    enable = lib.mkEnableOption "dinit as the system service manager" // {
+      default = true;
+    };
+
     package = lib.mkOption {
       type = lib.types.package;
-      default = if config.dinit.enable then config.dinit.package else pkgs.finit;
-      defaultText = lib.literalExpression ''if config.dinit.enable then config.dinit.package else pkgs.finit'';
-      apply =
-        package:
-        if config.dinit.enable then
-          package
-        else
-          (package.override {
-            plymouthSupport = config.programs.plymouth.enable;
-            plymouth = config.programs.plymouth.package;
-          }).overrideAttrs
-            (o: {
-              configureFlags = o.configureFlags ++ [ "--with-plugin-path=${dinix-setup}/lib/finit/plugins" ];
-            });
+      default = pkgs.dinit;
+      defaultText = lib.literalExpression "pkgs.dinit";
       description = ''
-        The package to use for `finit`.
+        The package to use for `dinit`.
 
-        ::: {.note}
-        The specified package will have its `configureFlags` appended to with
-        a finit plugin path (`--with-plugin-path`) set to the required
-        `dinix-setup` plugin.
-        :::
       '';
+    };
+
+    path = lib.mkOption {
+      type = with lib.types; listOf (either path str);
+      default = [ ];
+      description = "Packages added to the environment of Dinit-managed services.";
+    };
+
+    environment = lib.mkOption {
+      type = with lib.types; attrsOf str;
+      default = { };
+      description = "Environment variables passed to Dinit-managed services.";
     };
 
     readiness = lib.mkOption {
@@ -776,29 +770,13 @@ in
       '';
     };
 
-    path = lib.mkOption {
-      type = with lib.types; listOf (either path str);
-      default = [ ];
-      description = ''
-        Packages added to the `finit` PATH environment variable.
-      '';
-    };
-
-    environment = lib.mkOption {
-      type = with lib.types; attrsOf str;
-      default = { };
-      description = ''
-        Environment variables passed to *all* `finit` services.
-      '';
-    };
-
     cgroups = lib.mkOption {
       type = with lib.types; attrsOf (submodule [ cgroupOpts ]);
       default = { };
       description = ''
-        An attribute set of cgroups (v2) that will be created by `finit`.
+        An attribute set of cgroups (v2) that will be created by `dinit`.
 
-        See [upstream documentation](https://finit-project.github.io/config/cgroups/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/cgroups/) for additional details.
       '';
     };
 
@@ -806,9 +784,9 @@ in
       type = rlimitsType;
       default = { };
       description = ''
-        An attribute set of resource limits that will be apply by `finit`.
+        An attribute set of resource limits that will be apply by `dinit`.
 
-        See [upstream documentation](https://finit-project.github.io/config/runlevels/#resource-limits) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/runlevels/#resource-limits) for additional details.
       '';
     };
 
@@ -826,7 +804,7 @@ in
         An attribute set of services, or daemons, to be monitored and automatically
         restarted if they exit prematurely.
 
-        See [upstream documentation](https://finit-project.github.io/config/services/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/services/) for additional details.
       '';
     };
 
@@ -841,9 +819,9 @@ in
         ]);
       default = { };
       description = ''
-        An attribute set of one-shot commands to be executed by `finit`.
+        An attribute set of one-shot commands to be executed by `dinit`.
 
-        See [upstream documentation](https://finit-project.github.io/config/task-and-run/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/task-and-run/) for additional details.
       '';
     };
 
@@ -861,7 +839,7 @@ in
         An attribute set of one-shot commands to run in sequence when entering a runlevel. `run` commands
         are guaranteed to be completed before running the next command. Useful when serialization is required.
 
-        See [upstream documentation](https://finit-project.github.io/config/task-and-run/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/task-and-run/) for additional details.
       '';
     };
 
@@ -874,9 +852,9 @@ in
         ]);
       default = { };
       description = ''
-        An attribute set of TTYs that `finit` should manage.
+        An attribute set of TTYs that `dinit` should manage.
 
-        See [upstream documentation](https://finit-project.github.io/config/tty/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/tty/) for additional details.
       '';
     };
 
@@ -891,84 +869,23 @@ in
         ]);
       default = { };
       description = ''
-        An attribute set of SysV init scripts to be managed by `finit`. These are
+        An attribute set of SysV init scripts to be managed by `dinit`. These are
         legacy init scripts that are called with `start`, `stop`, and `restart` arguments.
 
-        See [upstream documentation](https://finit-project.github.io/config/sysv/) for additional details.
+        See [upstream documentation](https://dinit-project.github.io/config/sysv/) for additional details.
       '';
+    };
+
+    targets = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.submodule {
+        options = {
+          enable = lib.mkEnableOption "this dinit target" // { default = true; };
+          dependsOn = lib.mkOption { type = lib.types.listOf lib.types.str; default = [ ]; };
+        };
+      });
+      default = { };
+      description = "Dinit internal target services.";
     };
   };
 
-  config = {
-    environment.etc =
-      let
-        # NOTE: entries under /etc/finit.d are marked as direct-symlink to avoid service reloads on every dinix activation
-
-        serviceTree = lib.mapAttrs' (name: service: {
-          name = if service.id != "%i" then "finit.d/${name}.conf" else "finit.d/available/${name}.conf";
-
-          value.mode = "direct-symlink";
-          value.text = mkConfigFile "service" service;
-        }) (lib.filterAttrs (_: service: service.enable) cfg.services);
-
-        taskTree = lib.mapAttrs' (name: task: {
-          name = if task.id != "%i" then "finit.d/${name}.conf" else "finit.d/available/${name}.conf";
-
-          value.mode = "direct-symlink";
-          value.text = mkConfigFile "task" task;
-        }) (lib.filterAttrs (_: task: task.enable) cfg.tasks);
-
-        sysvTree = lib.mapAttrs' (name: sysv: {
-          name = if sysv.id != "%i" then "finit.d/${name}.conf" else "finit.d/available/${name}.conf";
-
-          value.mode = "direct-symlink";
-          value.text = mkConfigFile "sysv" sysv;
-        }) (lib.filterAttrs (_: sysv: sysv.enable) cfg.sysv);
-
-        cgroup = lib.concatMapAttrsStringSep "\n" (
-          _: cgroupOpts:
-          "cgroup ${cgroupOpts.name} ${
-            lib.concatMapAttrsStringSep "," (k: v: "${k}:${toString v}") cgroupOpts.settings
-          }"
-        ) cfg.cgroups;
-
-        # TODO: split these out into their own files, while preserving order, and add rlimits option
-        run = lib.concatMapStringsSep "\n" (serviceStr "run") (
-          lib.sortProperties (lib.concatMap (v: lib.optional v.enable v) (lib.attrValues config.finit.run))
-        );
-
-        tty = lib.concatStringsSep "\n" (
-          lib.concatMap (v: lib.optional v.enable (serviceStr "tty" v)) (lib.attrValues config.finit.ttys)
-        );
-
-        configFile = {
-          "finit.conf".mode = "direct-symlink";
-          "finit.conf".text = lib.mkMerge [
-            (lib.mkBefore (lib.generators.toKeyValue { } cfg.environment))
-            ''
-              readiness ${cfg.readiness}
-              runlevel ${toString cfg.runlevel}
-
-              # cgroups
-              ${cgroup}
-
-              # rlimits
-              ${rlimitStr cfg.rlimits}
-
-              # ttys
-              ${tty}
-
-              # sequential one-shot commands
-              ${run}
-            ''
-          ];
-        };
-      in
-      lib.mkMerge [
-        serviceTree
-        taskTree
-        sysvTree
-        configFile
-      ];
-  };
 }

@@ -1,6 +1,6 @@
 # `dinix`
 
-`dinix` is an experimental GNU/Linux distribution built around the `nix` package manager. It uses [finit](https://github.com/finit-project/finit) instead of `systemd` as its init system and service supervisor. By default, it seeks to be:
+`dinix` is an experimental GNU/Linux distribution built around the `nix` package manager. It uses [dinit](https://github.com/davmac314/dinit) as its init system and service supervisor. By default, it seeks to be:
 
 - minimal
 - unopinionated
@@ -26,6 +26,6 @@ For an installation guide, please see one of the following repositories on Codeb
 # See also
 
 - [dinix options search](https://finix-community.github.io/dinix/options.html)
-- [finit project](https://finit-project.github.io/)
+- [dinit project](https://davmac.org/projects/dinit.html)
 - [dinix profiles](https://github.com/finix-community/profiles)
 - [dinix community modules](https://github.com/finix-community/community-modules/)

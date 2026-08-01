@@ -50,7 +50,7 @@ in
       cfg.package
     ];
 
-    finit.services.zerotierone = {
+    dinit.services.zerotierone = {
       description = "zerotier one";
       conditions = [
         "service/syslogd/ready"
@@ -59,7 +59,7 @@ in
       command = "${cfg.package}/bin/zerotier-one ${cfg.stateDir}";
     };
 
-    finit.tmpfiles.rules = lib.optionals (cfg.stateDir == "/var/lib/zerotier-one") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.stateDir == "/var/lib/zerotier-one") [
       "d ${cfg.stateDir}"
 
       # TODO: ${cfg.stateDir}/networks.d/<JOIN> -> managed by linker

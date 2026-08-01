@@ -174,7 +174,7 @@ let
               after every reboot. Mutually exclusive with {option}`label`,
               since the underlying mapped device is regenerated on every boot
               and is therefore not activated through `/etc/fstab` like a
-              regular swap device, but through a dedicated `finit` task.
+              regular swap device, but through a dedicated `dinit` task.
             '';
           };
 

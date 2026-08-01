@@ -87,7 +87,7 @@ in
       };
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       # Home dir of the sddm user, also contains state.conf
       "d       /var/lib/sddm   0750    sddm    sddm"
       # This contains X11 auth files passed to Xorg and the greeter
@@ -128,7 +128,7 @@ in
       }
     ];
 
-    finit.services.sddm = {
+    dinit.services.sddm = {
       description = "sddm display manager";
       runlevels = "34";
       conditions = [

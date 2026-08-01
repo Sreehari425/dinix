@@ -90,18 +90,18 @@ in
 
     environment.systemPackages = [ cfg.package ];
 
-    finit.services.chronyd = {
+    dinit.services.chronyd = {
       description = "chrony ntp daemon";
       conditions = "service/syslogd/ready";
       command = "${cfg.package}/bin/chronyd " + lib.escapeShellArgs cfg.extraArgs;
       nohup = true;
       notify = lib.mkIf notifySupport "s6";
 
-      # TODO: add "if" to finit.services
+      # TODO: add "if" to dinit.services
       extraConfig = "if:<!int/container>";
     };
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/chrony 0750 chrony chrony - -"
       "f /var/lib/chrony/chrony.drift 0640 chrony chrony - -"
       "f /var/lib/chrony/chrony.keys 0640 chrony chrony - -"

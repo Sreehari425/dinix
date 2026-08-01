@@ -269,7 +269,7 @@ in
       ];
     };
 
-    finit.tasks.suid-sgid-wrappers = {
+    dinit.tasks.suid-sgid-wrappers = {
       description = "create suid/sgid wrappers";
       runlevels = "S12345";
       log = true;

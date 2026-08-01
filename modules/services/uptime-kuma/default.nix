@@ -98,7 +98,7 @@ in
       NODE_ENV = "production";
     };
 
-    finit.services.uptime-kuma = {
+    dinit.services.uptime-kuma = {
       inherit (cfg) user group;
 
       description = "uptime kuma";
@@ -116,7 +116,7 @@ in
       path = [ pkgs.unixtools.ping ];
     };
 
-    finit.tmpfiles.rules = lib.optionals (cfg.settings.DATA_DIR == "/var/lib/uptime-kuma") [
+    dinit.tmpfiles.rules = lib.optionals (cfg.settings.DATA_DIR == "/var/lib/uptime-kuma") [
       "d ${cfg.settings.DATA_DIR} 0750 ${cfg.user} ${cfg.group}"
     ];
 

@@ -68,7 +68,7 @@ in
       });
     '';
 
-    finit.services.rtkit-daemon = {
+    dinit.services.rtkit-daemon = {
       description = "RealtimeKit scheduling policy service";
       command = "${cfg.package}/libexec/rtkit-daemon" + lib.optionalString cfg.debug " --debug";
       conditions = "service/polkit/ready";

@@ -49,7 +49,7 @@ in
       cfg.package
     ];
 
-    finit.tmpfiles.rules = [
+    dinit.tmpfiles.rules = [
       "d /var/lib/tlp"
     ];
 
@@ -79,7 +79,7 @@ in
       # -SUBSYSTEM=block;DEVTYPE=disk;.* root:root 0600 +${cfg.package}/lib/udev/tlp-usb-udev disk /sys/$DEVPATH
     '';
 
-    finit.tasks = {
+    dinit.tasks = {
       "tlp@start" = {
         description = "tlp system startup";
         command = "${tlpExe} init start";
@@ -101,8 +101,8 @@ in
       };
     };
 
-    # TODO: add finit.services.restartTriggers option
-    environment.etc."finit.d/tlp@reload.conf".text = lib.mkAfter ''
+    # TODO: add dinit.services.restartTriggers option
+    environment.etc."dinit.d/tlp@reload.conf".text = lib.mkAfter ''
 
       # standard nixos trick to force a restart when something has changed
       # ${config.environment.etc."tlp.conf".source}

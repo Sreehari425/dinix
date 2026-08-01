@@ -101,7 +101,7 @@
         lib.setPrio (-1) config.i18n.glibcLocales
       );
 
-    finit.environment = lib.mkIf (config.i18n.supportedLocales != [ ]) (
+    dinit.environment = lib.mkIf (config.i18n.supportedLocales != [ ]) (
       {
         LANG = config.i18n.defaultLocale;
       }

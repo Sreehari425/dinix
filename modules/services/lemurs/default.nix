@@ -63,7 +63,7 @@ in
             # The key used to shutdown. Possibilities are F1 to F12.
             key = "F1";
             # The command that is executed when the key is pressed
-            cmd = "${config.finit.package}/bin/initctl poweroff";
+            cmd = "${config.dinit.package}/bin/dinitctl poweroff";
           }
 
           {
@@ -77,7 +77,7 @@ in
             # The key used to reboot. Possibilities are F1 to F12.
             key = "F2";
             # The command that is executed when the key is pressed
-            cmd = "${config.finit.package}/bin/initctl reboot";
+            cmd = "${config.dinit.package}/bin/dinitctl reboot";
           }
         ];
       };
@@ -126,9 +126,9 @@ in
     environment.etc."lemurs/config.toml".source = configFile;
 
     # disable the tty that lemurs runs on
-    finit.ttys."tty${toString cfg.settings.tty}".enable = false;
+    dinit.ttys."tty${toString cfg.settings.tty}".enable = false;
 
-    finit.services.lemurs = {
+    dinit.services.lemurs = {
       description = "lemurs terminal user interface display/login manager";
       conditions = "service/syslogd/ready";
       command = "${pkgs.util-linux}/bin/agetty -nil ${cfg.package}/bin/lemurs tty${toString cfg.settings.tty}";
