@@ -3,32 +3,55 @@
 
   outputs =
     { self }:
-    {
-      nixosModules = import ./modules;
+    let
+      sources = import ./lon.nix;
+      defaultPkgs = system: import sources.nixpkgs { inherit system; };
 
-      lib.dinixSystem =
+      dinixSystem =
         {
+          system ? builtins.currentSystem,
+          pkgs ? null,
+          nixpkgs ? null,
           lib ? null,
           specialArgs ? { },
           modules ? [ ],
           ...
         }:
         let
-          config = lib.evalModules {
+          resolvedPkgs =
+            if pkgs != null then
+              pkgs
+            else if nixpkgs != null then
+              nixpkgs.legacyPackages.${system}
+            else
+              defaultPkgs system;
+          resolvedLib = if lib != null then lib else resolvedPkgs.lib;
+          config = resolvedLib.evalModules {
             class = "nixos";
-            specialArgs = lib.recursiveUpdate { modules = self.nixosModules; } specialArgs;
-            modules = [ self.nixosModules.default ] ++ modules;
+            specialArgs = specialArgs // {
+              inherit resolvedPkgs;
+              pkgs = resolvedPkgs;
+              modules = self.nixosModules;
+            };
+            modules = [
+              self.nixosModules.default
+              { nixpkgs.pkgs = resolvedPkgs; }
+            ] ++ modules;
           };
         in
         config
         // {
-          inherit (config._module.args) pkgs;
-          inherit lib;
+          inherit resolvedPkgs resolvedLib;
+          pkgs = resolvedPkgs;
+          lib = resolvedLib;
         };
+    in
+    {
+      nixosModules = import ./modules;
 
-      # Compatibility alias for configurations written against the original
-      # Finix project API. New configurations should use lib.dinixSystem.
-      lib.finixSystem = self.lib.dinixSystem;
+      # Reusable constructor for consumers that want to define their own
+      # nixosConfigurations in a separate flake.
+      lib.dinixSystem = dinixSystem;
 
       formatter =
         let
