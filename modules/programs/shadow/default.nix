@@ -144,6 +144,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Shadow provides user-facing account utilities such as passwd, su,
+    # login, useradd, and groupadd.  Keep them available in the system
+    # profile, as they are in a normal NixOS installation.
+    environment.systemPackages = [ cfg.package ];
+
     environment.etc."security/limits.conf".text = lib.mkDefault "";
     environment.etc."login.defs".source = format.generate "login.defs" cfg.settings;
 
