@@ -40,7 +40,7 @@
             # auto-discovered program and service modules as well so public
             # flake configurations can use options such as nix.*, Hyprland,
             # NetworkManager, and nix-daemon without importing them manually.
-            modules = lib.unique (lib.attrValues self.nixosModules) ++ [
+            modules = resolvedLib.unique (resolvedLib.attrValues self.nixosModules) ++ [
               { nixpkgs.pkgs = resolvedPkgs; }
             ] ++ modules;
           };
