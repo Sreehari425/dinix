@@ -43,9 +43,9 @@ if [ -f /etc/.clean ]; then
   done </etc/.clean
 fi
 
-clean_tmp="$(mktemp)"
-created_tmp="$(mktemp)"
-etc_dirs="$(mktemp)"
+clean_tmp="$(mktemp -p /tmp)"
+created_tmp="$(mktemp -p /tmp)"
+etc_dirs="$(mktemp -p /tmp)"
 
 find "$etc" -mindepth 1 >"$etc_dirs"
 
