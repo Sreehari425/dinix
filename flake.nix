@@ -36,8 +36,11 @@
               modulesPath = "${resolvedPkgs.path}/nixos/modules";
               modules = self.nixosModules;
             };
-            modules = [
-              self.nixosModules.default
+            # The default set contains the foundational modules. Import the
+            # auto-discovered program and service modules as well so public
+            # flake configurations can use options such as nix.*, Hyprland,
+            # NetworkManager, and nix-daemon without importing them manually.
+            modules = lib.unique (lib.attrValues self.nixosModules) ++ [
               { nixpkgs.pkgs = resolvedPkgs; }
             ] ++ modules;
           };
