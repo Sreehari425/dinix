@@ -68,9 +68,35 @@ let
     pkgs.writeText "nix.conf" ''
       ${mkKeyValuePairs (lib.filterAttrs (key: value: !(isExtra key)) cfg.settings)}
       ${mkKeyValuePairs (lib.filterAttrs (key: value: isExtra key) cfg.settings)}
+      ${cfg.extraOptions}
     '';
 in
 {
+  # NixOS-compatible front-end. The daemon itself remains supervised by
+  # Dinit, but existing configurations can continue using nix.package,
+  # nix.settings, and nix.extraOptions.
+  options.nix = {
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.nix;
+      description = "The Nix package used by Dinix.";
+    };
+
+    settings = lib.mkOption {
+      type = lib.types.submodule {
+        freeformType = configType;
+      };
+      default = { };
+      description = "Nix configuration settings written to /etc/nix/nix.conf.";
+    };
+
+    extraOptions = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Additional raw lines appended to nix.conf.";
+    };
+  };
+
   options.services.nix-daemon = {
     enable = lib.mkOption {
       type = lib.types.bool;
@@ -280,9 +306,23 @@ in
         verbatim to the resulting config file.
       '';
     };
+
+    extraOptions = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "Additional raw lines appended to nix.conf.";
+    };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkMerge [
+    {
+      services.nix-daemon = {
+        package = lib.mkDefault config.nix.package;
+        settings = lib.mkDefault config.nix.settings;
+        extraOptions = lib.mkDefault config.nix.extraOptions;
+      };
+    }
+    (lib.mkIf cfg.enable {
     environment.etc."nix/nix.conf".source = configFile;
 
     dinit.services.nix-daemon = {
@@ -351,5 +391,6 @@ in
       # standard nixos trick to force a restart when something has changed
       # ${config.environment.etc."nix/nix.conf".source}
     '';
-  };
+    })
+  ];
 }
