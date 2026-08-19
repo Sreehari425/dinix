@@ -1,6 +1,7 @@
 { ... }:
 {
-  # Replace this example with hardware-configuration.nix generated for the
-  # target machine. Storage and bootloader support are intentionally left
-  # explicit so this example cannot silently target the wrong disk.
+  # Hardware-specific configuration belongs here. The example configuration
+  # uses filesystem labels, so this file can remain empty for a generic VM.
+  # For a physical machine, add GPU, CPU microcode, encryption, and any
+  # machine-specific kernel modules here.
 }
